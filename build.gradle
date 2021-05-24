@@ -21,6 +21,14 @@ buildscript {
     }
 }
 
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    }
+}
+
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
