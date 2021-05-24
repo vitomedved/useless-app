@@ -5,11 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.res.stringResource
-import androidx.hilt.navigation.compose.hiltNavGraphViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -20,25 +17,21 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navArgument
 import com.example.lastfmuselessapp.R
+import com.example.lastfmuselessapp.ui.main.HomeScreen
+import com.example.lastfmuselessapp.ui.main.HomeViewModel
 import com.example.lastfmuselessapp.ui.onboarding.OnboardingScreen
-import com.example.lastfmuselessapp.ui.onboarding.OnboardingUiState
-import com.example.lastfmuselessapp.ui.onboarding.OnboardingViewModel
 
 sealed class Screen(val route: String, @StringRes val resourceId: Int) {
-    object Onboarding : Screen("onboarding/{index}", R.string.onboarding) {
-
-        const val ARGUMENT_INDEX = "index"
-
-        fun routeForIndex(index: Int?): String = route.replace("{index}", index?.toString() ?: "0")
+    object Onboarding : Screen("onboarding", R.string.onboarding)
+    object Home : Screen("home", R.string.home)
+    object Artist : Screen("artist/{artistId}", R.string.artist) {
+        fun getArtistIdArgument(): String = "artistId"
     }
-
-    object Welcome : Screen("welcome", R.string.welcome)
-    object Artist : Screen("artist/{artistId}", R.string.artist)
 }
 
-val screenItems = listOf(
-    //Screen.Onboarding,
-    Screen.Welcome,
+val bottomNavbarItems = listOf(
+//    Screen.Onboarding,
+    Screen.Home,
     Screen.Artist
 )
 
@@ -67,7 +60,7 @@ fun BottomNavigationBar(navController: NavController) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
 
-        screenItems.forEach { screen ->
+        bottomNavbarItems.forEach { screen ->
             BottomNavigationItem(
                 icon = { Icon(imageVector = Icons.Filled.Favorite, contentDescription = null) },
                 label = { Text(text = stringResource(id = screen.resourceId)) },
@@ -86,37 +79,23 @@ fun BottomNavigationBar(navController: NavController) {
 fun InitializeNavigation(navController: NavHostController, isOnboardingDone: Boolean = false) {
     NavHost(
         navController = navController,
-        startDestination = if (isOnboardingDone) Screen.Welcome.route else Screen.Onboarding.route
+        startDestination = if (isOnboardingDone) Screen.Home.route else Screen.Onboarding.route
     ) {
-        composable(
-            route = Screen.Onboarding.route,
-            arguments = listOf(navArgument("index") {
-                type = NavType.IntType
-                defaultValue = 0
-            })
-        ) { backStactEntry ->
-
-            val onboardingViewModel: OnboardingViewModel = hiltViewModel()
-            val onboardingUiState by onboardingViewModel.uiState.collectAsState()
-
-            OnboardingScreen(
-                navController = navController,
-                onboardingUiState = onboardingUiState,
-                onNextButtonClicked = {
-                    // TODO navigate to next onboarding or welcome screen if onboarding is done
-                    navController.navigate(
-                        Screen.Onboarding.routeForIndex(
-                            backStactEntry.arguments?.getInt(
-                                Screen.Onboarding.ARGUMENT_INDEX
-                            )?.plus(1)
-                        )
-                    )
-                })
+        composable(route = Screen.Onboarding.route) {
+            OnboardingScreen(onFinishOnboardingClicked = { navController.navigate(Screen.Home.route) })
         }
-        composable(route = Screen.Welcome.route) { WelcomeScreen(navController) }
+
+        composable(route = Screen.Home.route) {
+
+            val homeViewModel: HomeViewModel = hiltViewModel()
+            val homeUiState by homeViewModel.uiState.collectAsState()
+
+            HomeScreen(homeUiState = homeUiState)
+        }
+
         composable(
             route = Screen.Artist.route,
-            arguments = listOf(navArgument("artistId") {
+            arguments = listOf(navArgument(Screen.Artist.getArtistIdArgument()) {
                 type = NavType.StringType
                 nullable = true
 //                defaultValue = "defaultValue"
@@ -126,21 +105,6 @@ fun InitializeNavigation(navController: NavHostController, isOnboardingDone: Boo
                 navController = navController,
                 backstackEntry.arguments?.getString("artistId")
             )
-        }
-    }
-}
-
-@Composable
-fun WelcomeScreen(navController: NavController) {
-    Column {
-        Text(text = "Welcome back...")
-        Button(onClick = {
-            navController.navigate("onBoardingScreen") {
-                popUpTo("welcomeScreen") { inclusive = true }
-                launchSingleTop = true
-            }
-        }) {
-            Text(text = "Go to onboarding")
         }
     }
 }
