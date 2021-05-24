@@ -1,4 +1,4 @@
-package com.example.lastfmuselessapp.data.local
+package com.example.lastfmuselessapp.repository
 
 interface ArtistRepository {
 
