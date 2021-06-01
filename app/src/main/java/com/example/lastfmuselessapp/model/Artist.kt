@@ -1,4 +1,3 @@
 package com.example.lastfmuselessapp.model
 
-class Artist {
-}
+data class Artist (val id: Int, val name: String)
