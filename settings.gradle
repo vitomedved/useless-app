@@ -8,3 +8,5 @@
 //}
 rootProject.name = "Last.fm Useless App"
 include ':app'
+include ':domain'
+include ':data'

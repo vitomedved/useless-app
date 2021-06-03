@@ -1,5 +1,6 @@
 package com.example.lastfmuselessapp.ui.main
 
-import com.example.lastfmuselessapp.model.Artist
+import com.example.lastfmuselessapp.domain.model.Artist
+import com.example.lastfmuselessapp.domain.model.Resource
 
-class HomeUiState(val topArtists: List<Artist> = listOf(), val isLoading: Boolean = false)
+class HomeUiState(val artistResource: Resource<List<Artist>> = Resource.Loading())

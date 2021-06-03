@@ -1,58 +1,94 @@
 package com.example.lastfmuselessapp.ui.main
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.ScrollableTabRow
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.lastfmuselessapp.model.Artist
+import com.example.lastfmuselessapp.domain.model.Artist
+import com.example.lastfmuselessapp.domain.model.Resource
 import com.example.lastfmuselessapp.ui.Screen
-import com.example.lastfmuselessapp.ui.onboarding.OnboardingScreen
-import org.w3c.dom.Text
+
+val screenEdgePadding = 16.dp
 
 @Composable
 fun HomeScreen(homeUiState: HomeUiState, navController: NavHostController) {
     Column {
-        if (homeUiState.isLoading) {
-            Text(text = "Loading screen...")
+        if (homeUiState.artistResource is Resource.Loading) {
+            LoadingScreen(screenName = "Main Screen")
         } else {
-            TopArtistsCarousel(onArtistClicked = { artistId ->
-                navController.navigate(Screen.Artist.getRouteForArtistId(artistId = artistId))
-            })
+            // TODO use TopArtistCarousel and other components with loading flag in order to render gray loading boxes and avoid separate screen for loading
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxWidth()
+            ) {
+
+                // TODO refactor code
+                if (homeUiState.artistResource is Resource.Error) {
+                    Text(text = "Error happened: ${homeUiState.artistResource.message}")
+                } else if (homeUiState.artistResource is Resource.Success) {
+                    homeUiState.artistResource.data?.let {
+                        TopArtistsCarousel(
+                            artists = it,
+                            modifier = Modifier.padding(
+                                start = screenEdgePadding,
+                                end = screenEdgePadding,
+                                bottom = 24.dp,
+                                top = 24.dp
+                            )
+                        ) { artistId ->
+                            navController.navigate(Screen.Artist.getRouteForArtistId(artistId = artistId))
+                        }
+                    }
+                }
+            }
+
         }
     }
 }
 
 @Composable
-fun TopArtistsCarousel(onArtistClicked: (Int) -> Unit) {
-
-    LazyRow(
+fun LoadingScreen(screenName: String) {
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .fillMaxHeight(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        CircularProgressIndicator(modifier = Modifier.padding(8.dp))
+        Text(
+            text = "Loading $screenName...",
+            modifier = Modifier.padding(8.dp)
+        )
+    }
+}
+
+@Composable
+fun TopArtistsCarousel(
+    artists: List<Artist>,
+    modifier: Modifier = Modifier,
+    onArtistClicked: (String) -> Unit
+) {
+
+    LazyRow(
+        modifier = modifier,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        val listOfItems = mutableListOf<Artist>()
-
-        for (i in 0..5) {
-            listOfItems.add(Artist(i, "Artist number $i"))
-        }
-
-        items(listOfItems) { item ->
+        items(artists) { item ->
             ArtistListItem(
                 artist = item,
                 modifier = Modifier
-                    .padding(8.dp)
-                    .clickable { onArtistClicked(item.id) })
+                    .clickable { onArtistClicked(item.id) }
+                    .padding(16.dp)
+            )
         }
     }
 }

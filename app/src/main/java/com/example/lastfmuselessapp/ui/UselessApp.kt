@@ -25,7 +25,7 @@ sealed class Screen(val route: String, @StringRes val resourceId: Int) {
     object Home : Screen("home", R.string.home)
     object Artist : Screen("artist/{artistId}", R.string.artist) {
         fun getArtistIdArgument(): String = "artistId"
-        fun getRouteForArtistId(artistId: Int) = "artist/$artistId"
+        fun getRouteForArtistId(artistId: String) = "artist/$artistId"
     }
 
     object Library : Screen("library", R.string.library)
