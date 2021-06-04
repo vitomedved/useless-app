@@ -2,14 +2,9 @@ package com.example.lastfmuselessapp.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Light theme colors
-
-// Dark theme colors
-
 val Grey100 = Color(0xFFEEEEEE)
 val Grey200 = Color(0xFFBBBBBB)
 val Grey300 = Color(0xFF999999)
-val Grey600 = Color(0xFF555555)
 val Grey800 = Color(0xFF151515)
 
 val Red700 = Color(0xFFAB0211)

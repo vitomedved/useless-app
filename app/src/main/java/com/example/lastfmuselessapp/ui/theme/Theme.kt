@@ -15,11 +15,11 @@ private val DarkColorPalette = darkColors(
     background = Grey800,
     surface = Grey800,
     error = Red700,
-    onPrimary = Grey800,
+    onPrimary = Grey100,
     onSecondary = Grey300,
     onBackground = Grey300,
     onSurface = Grey300,
-    onError = Grey800
+    onError = Grey100
 )
 
 private val LightColorPalette = lightColors(

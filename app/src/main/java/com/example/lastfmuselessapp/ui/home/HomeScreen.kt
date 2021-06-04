@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -31,6 +32,19 @@ fun HomeScreen(homeUiState: HomeUiState, navController: NavHostController) {
     ) {
 
         // TODO refactor code
+
+        // TODO move this text to separate composable with other title Text, it's basically the same thing with different text
+        Text(
+            text = "Top artists worldwide",
+            style = MaterialTheme.typography.h6,
+            modifier = Modifier.padding(
+                top = 12.dp,
+                start = 12.dp,
+                end = 12.dp
+            )
+        )
+
+        // TODO refactor this pls...
         when (homeUiState.topArtistsWorldwideResource) {
             is Resource.Loading -> LoadingResource(resourceName = "Top Artists")
             is Resource.Error -> Text(text = "Error happened: ${homeUiState.topArtistsWorldwideResource.message}")
@@ -58,6 +72,16 @@ fun HomeScreen(homeUiState: HomeUiState, navController: NavHostController) {
                 }
             }
         }
+
+        Text(
+            text = "Top tracks worldwide",
+            style = MaterialTheme.typography.h6,
+            modifier = Modifier.padding(
+                top = 12.dp,
+                start = 12.dp,
+                end = 12.dp
+            )
+        )
 
         when (homeUiState.topTracksWorldwideResource) {
             is Resource.Loading -> LoadingResource(resourceName = "Top Tracks")
