@@ -1,9 +1,9 @@
 package com.example.lastfmuselessapp.data.network.mapper
 
-import com.example.lastfmuselessapp.data.network.model.Artists
-import com.example.lastfmuselessapp.domain.model.Artist
+import com.example.lastfmuselessapp.data.network.model.artist.ArtistListWithAttributes
+import com.example.lastfmuselessapp.domain.model.artist.Artist
 
 interface ArtistMapper {
 
-    fun toArtistList(artists: Artists): List<Artist>
+    fun toArtistList(artistListWithAttributes: ArtistListWithAttributes): List<Artist>
 }
