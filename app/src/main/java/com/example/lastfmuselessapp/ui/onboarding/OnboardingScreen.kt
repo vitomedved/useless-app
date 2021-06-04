@@ -42,11 +42,3 @@ fun OnboardingScreen(
 
     }
 }
-
-@Preview
-@Composable
-fun Preview() {
-    OnboardingScreen {
-
-    }
-}

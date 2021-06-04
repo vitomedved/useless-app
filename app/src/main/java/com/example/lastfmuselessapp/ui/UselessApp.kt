@@ -17,8 +17,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navArgument
 import com.example.lastfmuselessapp.R
-import com.example.lastfmuselessapp.ui.main.HomeScreen
-import com.example.lastfmuselessapp.ui.main.HomeViewModel
+import com.example.lastfmuselessapp.ui.home.HomeScreen
+import com.example.lastfmuselessapp.ui.home.HomeViewModel
 import com.example.lastfmuselessapp.ui.onboarding.OnboardingScreen
 
 sealed class Screen(val route: String, @StringRes val resourceId: Int) {
