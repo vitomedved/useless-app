@@ -1,4 +1,4 @@
-package com.example.lastfmuselessapp.ui.main
+package com.example.lastfmuselessapp.ui.home
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -19,37 +19,34 @@ val screenEdgePadding = 16.dp
 
 @Composable
 fun HomeScreen(homeUiState: HomeUiState, navController: NavHostController) {
-    Column {
-        if (homeUiState.artistResource is Resource.Loading) {
-            LoadingScreen(screenName = "Main Screen")
-        } else {
-            // TODO use TopArtistCarousel and other components with loading flag in order to render gray loading boxes and avoid separate screen for loading
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxWidth()
-            ) {
+    if (homeUiState.topArtistsResource is Resource.Loading) {
+        LoadingScreen(screenName = "Main Screen")
+    } else {
+        // TODO use TopArtistCarousel and other components with loading flag in order to render gray loading boxes and avoid separate screen for loading
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxWidth()
+        ) {
 
-                // TODO refactor code
-                if (homeUiState.artistResource is Resource.Error) {
-                    Text(text = "Error happened: ${homeUiState.artistResource.message}")
-                } else if (homeUiState.artistResource is Resource.Success) {
-                    homeUiState.artistResource.data?.let {
-                        TopArtistsCarousel(
-                            artists = it,
-                            modifier = Modifier.padding(
-                                start = screenEdgePadding,
-                                end = screenEdgePadding,
-                                bottom = 24.dp,
-                                top = 24.dp
-                            )
-                        ) { artistId ->
-                            navController.navigate(Screen.Artist.getRouteForArtistId(artistId = artistId))
-                        }
+            // TODO refactor code
+            if (homeUiState.topArtistsResource is Resource.Error) {
+                Text(text = "Error happened: ${homeUiState.topArtistsResource.message}")
+            } else if (homeUiState.topArtistsResource is Resource.Success) {
+                homeUiState.topArtistsResource.data?.let {
+                    TopArtistsCarousel(
+                        artists = it,
+                        modifier = Modifier.padding(
+                            start = screenEdgePadding,
+                            end = screenEdgePadding,
+                            bottom = 24.dp,
+                            top = 24.dp
+                        )
+                    ) { artistId ->
+                        navController.navigate(Screen.Artist.getRouteForArtistId(artistId = artistId))
                     }
                 }
             }
-
         }
     }
 }

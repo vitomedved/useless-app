@@ -1,4 +1,4 @@
-package com.example.lastfmuselessapp.ui.main
+package com.example.lastfmuselessapp.ui.home
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
