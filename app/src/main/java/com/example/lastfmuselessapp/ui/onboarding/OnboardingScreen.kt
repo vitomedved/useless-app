@@ -5,20 +5,22 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieAnimationSpec
+import com.example.lastfmuselessapp.R
 
 @Composable
 fun OnboardingScreen(
-    navController: NavController,
-    onboardingUiState: OnboardingUiState,
-    onNextButtonClicked: () -> Unit
+    onFinishOnboardingClicked: () -> Unit
 ) {
+    val lottieAnimationSpec = LottieAnimationSpec.RawRes(R.raw.artist_animation)
+
     Column(
         modifier = Modifier
             .padding(16.dp)
@@ -26,26 +28,25 @@ fun OnboardingScreen(
             .fillMaxHeight()
     ) {
 
-        if (onboardingUiState.isEmpty) {
-            CircularProgressIndicator(
-                modifier = Modifier
-                    .padding(12.dp)
-                    .align(Alignment.CenterHorizontally)
-            )
-        } else {
-            Text(
-                modifier = Modifier
-                    .padding(12.dp)
-                    .align(Alignment.CenterHorizontally),
-                text = onboardingUiState.onboardingModel.description + ", " + onboardingUiState.onboardingModel.index
-            )
+        LottieAnimation(
+            spec = lottieAnimationSpec,
+            modifier = Modifier
+                .padding(12.dp)
+                .align(Alignment.CenterHorizontally)
+        )
+
+        Button(onClick = { onFinishOnboardingClicked() }) {
+            Text(text = "Go home")
         }
 
-        Button(modifier = Modifier
-            .align(Alignment.CenterHorizontally)
-            .padding(12.dp),
-            onClick = { onNextButtonClicked() }) {
-            Text(text = "Go to next fragment")
-        }
+
+    }
+}
+
+@Preview
+@Composable
+fun Preview() {
+    OnboardingScreen {
+
     }
 }
