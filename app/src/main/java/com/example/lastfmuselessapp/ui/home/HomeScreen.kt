@@ -1,41 +1,49 @@
 package com.example.lastfmuselessapp.ui.home
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.lastfmuselessapp.domain.model.Artist
 import com.example.lastfmuselessapp.domain.model.Resource
+import com.example.lastfmuselessapp.domain.model.track.Track
+import com.example.lastfmuselessapp.model.view.HorizontalCarouselItemModel
 import com.example.lastfmuselessapp.ui.Screen
 
 val screenEdgePadding = 16.dp
 
 @Composable
 fun HomeScreen(homeUiState: HomeUiState, navController: NavHostController) {
-    if (homeUiState.topArtistsResource is Resource.Loading) {
-        LoadingScreen(screenName = "Main Screen")
-    } else {
-        // TODO use TopArtistCarousel and other components with loading flag in order to render gray loading boxes and avoid separate screen for loading
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxWidth()
-        ) {
 
-            // TODO refactor code
-            if (homeUiState.topArtistsResource is Resource.Error) {
-                Text(text = "Error happened: ${homeUiState.topArtistsResource.message}")
-            } else if (homeUiState.topArtistsResource is Resource.Success) {
-                homeUiState.topArtistsResource.data?.let {
-                    TopArtistsCarousel(
-                        artists = it,
+    // TODO use TopArtistCarousel and other components with loading flag in order to render gray loading boxes and avoid separate screen for loading
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxWidth()
+    ) {
+
+        // TODO refactor code
+        when (homeUiState.topArtistsWorldwideResource) {
+            is Resource.Loading -> LoadingResource(resourceName = "Top Artists")
+            is Resource.Error -> Text(text = "Error happened: ${homeUiState.topArtistsWorldwideResource.message}")
+            is Resource.Success -> {
+                homeUiState.topArtistsWorldwideResource.data?.let { artistList ->
+                    HorizontalCarouselOfItems(
+                        items = artistList.map {
+                            HorizontalCarouselItemModel(
+                                it.name,
+                                it.name,
+                                it.id
+                            )
+                        },
                         modifier = Modifier.padding(
                             start = screenEdgePadding,
                             end = screenEdgePadding,
@@ -43,7 +51,35 @@ fun HomeScreen(homeUiState: HomeUiState, navController: NavHostController) {
                             top = 24.dp
                         )
                     ) { artistId ->
-                        navController.navigate(Screen.Artist.getRouteForArtistId(artistId = artistId))
+                        if (artistId.isNotEmpty()) {
+                            navController.navigate(Screen.Artist.getRouteForArtistId(artistId = artistId))
+                        }
+                    }
+                }
+            }
+        }
+
+        when (homeUiState.topTracksWorldwideResource) {
+            is Resource.Loading -> LoadingResource(resourceName = "Top Tracks")
+            is Resource.Error -> Text(text = "Error happened: ${homeUiState.topTracksWorldwideResource.message}")
+            is Resource.Success -> {
+                homeUiState.topTracksWorldwideResource.data?.let { trackList ->
+                    HorizontalCarouselOfItems(
+                        items = trackList.map {
+                            HorizontalCarouselItemModel(
+                                it.name,
+                                "by ${it.artistName}",
+                                it.id
+                            )
+                        },
+                        modifier = Modifier.padding(
+                            start = screenEdgePadding,
+                            end = screenEdgePadding,
+                            bottom = 24.dp,
+                            top = 24.dp
+                        )
+                    ) { trackId ->
+                        // NO-OP
                     }
                 }
             }
@@ -52,38 +88,35 @@ fun HomeScreen(homeUiState: HomeUiState, navController: NavHostController) {
 }
 
 @Composable
-fun LoadingScreen(screenName: String) {
+fun LoadingResource(resourceName: String) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         CircularProgressIndicator(modifier = Modifier.padding(8.dp))
         Text(
-            text = "Loading $screenName...",
+            text = "Loading $resourceName...",
             modifier = Modifier.padding(8.dp)
         )
     }
 }
 
 @Composable
-fun TopArtistsCarousel(
-    artists: List<Artist>,
+fun HorizontalCarouselOfItems(
+    items: List<HorizontalCarouselItemModel>,
     modifier: Modifier = Modifier,
-    onArtistClicked: (String) -> Unit
+    onItemClicked: (String) -> Unit
 ) {
 
     LazyRow(
-        modifier = modifier,
+        modifier = modifier.background(color = MaterialTheme.colors.background),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        items(artists) { item ->
-            ArtistListItem(
-                artist = item,
+        items(items) { item ->
+            HorizontalCarouselItem(
+                item = item,
                 modifier = Modifier
-                    .clickable { onArtistClicked(item.id) }
+                    .clickable { onItemClicked(item.id) }
                     .padding(16.dp)
             )
         }
@@ -91,9 +124,17 @@ fun TopArtistsCarousel(
 }
 
 @Composable
-fun ArtistListItem(artist: Artist, modifier: Modifier = Modifier) {
+fun HorizontalCarouselItem(item: HorizontalCarouselItemModel, modifier: Modifier = Modifier) {
     Column(modifier = modifier) {
-        Text(text = "Artist name under me")
-        Text(text = artist.name)
+        Text(text = item.topText, color = MaterialTheme.colors.onBackground)
+        Text(text = item.bottomText, color = MaterialTheme.colors.onBackground)
+    }
+}
+
+@Composable
+fun TrackListItem(track: Track, modifier: Modifier = Modifier) {
+    Column(modifier = modifier) {
+        Text(text = "Track name under me")
+        Text(text = track.name)
     }
 }

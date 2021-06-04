@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.lastfmuselessapp.domain.repository.ArtistRepository
+import com.example.lastfmuselessapp.domain.repository.TrackRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,6 +14,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val artistRepository: ArtistRepository,
+    private val trackRepository: TrackRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -21,7 +23,10 @@ class HomeViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            _uiState.value = HomeUiState(artistRepository.getTopArtists(10))
+            _uiState.value = HomeUiState(
+                artistRepository.getTopArtists(10),
+                trackRepository.getTopTracksWorldwide(10)
+            )
         }
     }
 }
