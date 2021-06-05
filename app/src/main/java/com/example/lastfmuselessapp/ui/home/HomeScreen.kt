@@ -1,12 +1,7 @@
 package com.example.lastfmuselessapp.ui.home
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -15,9 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.lastfmuselessapp.domain.model.Resource
-import com.example.lastfmuselessapp.domain.model.track.Track
-import com.example.lastfmuselessapp.model.view.HorizontalCarouselItemModel
 import com.example.lastfmuselessapp.ui.Screen
+import com.example.lastfmuselessapp.ui.composables.TopArtistsCarousel
+import com.example.lastfmuselessapp.ui.composables.TopTracksCarousel
 
 val screenEdgePadding = 16.dp
 
@@ -50,20 +45,16 @@ fun HomeScreen(homeUiState: HomeUiState, navController: NavHostController) {
             is Resource.Error -> Text(text = "Error happened: ${homeUiState.topArtistsWorldwideResource.message}")
             is Resource.Success -> {
                 homeUiState.topArtistsWorldwideResource.data?.let { artistList ->
-                    HorizontalCarouselOfItems(
-                        items = artistList.map {
-                            HorizontalCarouselItemModel(
-                                it.name,
-                                it.name,
-                                it.id
+                    TopArtistsCarousel(
+                        artistList = artistList,
+                        modifier = Modifier
+                            .padding(
+                                start = screenEdgePadding,
+                                top = screenEdgePadding,
+                                end = screenEdgePadding
                             )
-                        },
-                        modifier = Modifier.padding(
-                            start = screenEdgePadding,
-                            end = screenEdgePadding,
-                            bottom = 24.dp,
-                            top = 24.dp
-                        )
+                            .fillMaxWidth()
+                            .height(150.dp)
                     ) { artistId ->
                         if (artistId.isNotEmpty()) {
                             navController.navigate(Screen.Artist.getRouteForArtistId(artistId = artistId))
@@ -71,16 +62,15 @@ fun HomeScreen(homeUiState: HomeUiState, navController: NavHostController) {
                     }
                 }
             }
+            else -> TODO("Not implemented state.")
         }
+
+        Spacer(Modifier.height(16.dp))
 
         Text(
             text = "Top tracks worldwide",
             style = MaterialTheme.typography.h6,
-            modifier = Modifier.padding(
-                top = 12.dp,
-                start = 12.dp,
-                end = 12.dp
-            )
+            modifier = Modifier.padding(screenEdgePadding)
         )
 
         when (homeUiState.topTracksWorldwideResource) {
@@ -88,25 +78,17 @@ fun HomeScreen(homeUiState: HomeUiState, navController: NavHostController) {
             is Resource.Error -> Text(text = "Error happened: ${homeUiState.topTracksWorldwideResource.message}")
             is Resource.Success -> {
                 homeUiState.topTracksWorldwideResource.data?.let { trackList ->
-                    HorizontalCarouselOfItems(
-                        items = trackList.map {
-                            HorizontalCarouselItemModel(
-                                it.name,
-                                "by ${it.artistName}",
-                                it.id
-                            )
-                        },
-                        modifier = Modifier.padding(
-                            start = screenEdgePadding,
-                            end = screenEdgePadding,
-                            bottom = 24.dp,
-                            top = 24.dp
-                        )
-                    ) { trackId ->
-                        // NO-OP
+                    TopTracksCarousel(
+                        trackList = trackList,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(150.dp)
+                    ) { artistId ->
+                        // TODO
                     }
                 }
             }
+            else -> TODO("Not implemented state")
         }
     }
 }
@@ -125,40 +107,3 @@ fun LoadingResource(resourceName: String) {
     }
 }
 
-@Composable
-fun HorizontalCarouselOfItems(
-    items: List<HorizontalCarouselItemModel>,
-    modifier: Modifier = Modifier,
-    onItemClicked: (String) -> Unit
-) {
-
-    LazyRow(
-        modifier = modifier.background(color = MaterialTheme.colors.background),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        items(items) { item ->
-            HorizontalCarouselItem(
-                item = item,
-                modifier = Modifier
-                    .clickable { onItemClicked(item.id) }
-                    .padding(16.dp)
-            )
-        }
-    }
-}
-
-@Composable
-fun HorizontalCarouselItem(item: HorizontalCarouselItemModel, modifier: Modifier = Modifier) {
-    Column(modifier = modifier) {
-        Text(text = item.topText, color = MaterialTheme.colors.onBackground)
-        Text(text = item.bottomText, color = MaterialTheme.colors.onBackground)
-    }
-}
-
-@Composable
-fun TrackListItem(track: Track, modifier: Modifier = Modifier) {
-    Column(modifier = modifier) {
-        Text(text = "Track name under me")
-        Text(text = track.name)
-    }
-}
