@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.coil.rememberCoilPainter
 
@@ -25,8 +26,10 @@ fun HorizontalCarouselItem(
 ) {
     Column(modifier = modifier
         .clickable { onItemClicked() }
+            // TODO resources
         .padding(horizontal = 12.dp, vertical = 8.dp)) {
         Image(
+            // TODO check if this can and should be in res
             modifier = Modifier
                 .weight(0.7f)
                 .aspectRatio(1f)
@@ -39,6 +42,7 @@ fun HorizontalCarouselItem(
         Text(
             text = text,
             style = MaterialTheme.typography.caption,
+            // todo res? all other resources same comment
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
@@ -47,5 +51,13 @@ fun HorizontalCarouselItem(
                 .align(Alignment.CenterHorizontally)
                 .requiredWidthIn(min = 0.dp, max = 100.dp)
         )
+    }
+}
+
+@Preview("Carousel item")
+@Composable
+fun PreviewItem() {
+    HorizontalCarouselItem(imageUrl = "", text = "Test item") {
+
     }
 }

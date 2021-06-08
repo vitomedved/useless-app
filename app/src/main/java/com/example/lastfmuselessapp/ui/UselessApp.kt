@@ -17,7 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navArgument
 import com.example.lastfmuselessapp.R
-import com.example.lastfmuselessapp.ui.home.HomeScreen
+import com.example.lastfmuselessapp.ui.home.composables.HomeScreen
 import com.example.lastfmuselessapp.ui.home.HomeViewModel
 import com.example.lastfmuselessapp.ui.onboarding.OnboardingScreen
 
@@ -49,12 +49,12 @@ fun UselessApp() {
             isOnboardingDone = true
         })
     } else {
-        UselessAppHome(navController = navController)
+        UselessAppRoot(navController = navController)
     }
 }
 
 @Composable
-fun UselessAppHome(navController: NavHostController) {
+fun UselessAppRoot(navController: NavHostController) {
 
     var shouldShowNavbar by remember { mutableStateOf(true) }
 

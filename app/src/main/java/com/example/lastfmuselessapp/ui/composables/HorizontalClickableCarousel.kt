@@ -9,24 +9,27 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.lastfmuselessapp.domain.model.track.Track
+import com.example.lastfmuselessapp.ui.composables.model.HorizontalCarouselItemModel
 
 @Composable
-fun TopTracksCarousel(
-    trackList: List<Track>,
+fun HorizontalClickableCarousel(
+    carouselItem: List<HorizontalCarouselItemModel>,
     modifier: Modifier = Modifier,
     onArtistClicked: (String) -> Unit
 ) {
     LazyRow(
         modifier = modifier.background(color = MaterialTheme.colors.background),
+        // todo res
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        items(trackList) { track ->
+        items(carouselItem) { carouselItem ->
             HorizontalCarouselItem(
-                track.imageUrl,
-                track.name,
+                carouselItem.imageUrl,
+                carouselItem.label,
+
+                // todo res
                 modifier = Modifier.padding(4.dp)
-            ) { onArtistClicked(track.id) }
+            ) { onArtistClicked(carouselItem.id) }
         }
     }
 }

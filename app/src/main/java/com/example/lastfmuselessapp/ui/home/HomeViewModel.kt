@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.lastfmuselessapp.domain.repository.ArtistRepository
 import com.example.lastfmuselessapp.domain.repository.TrackRepository
+import com.example.lastfmuselessapp.mapper.HorizontalCarouselItemMapper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,8 +16,13 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val artistRepository: ArtistRepository,
     private val trackRepository: TrackRepository,
+    private val horizontalCarouselItemMapper: HorizontalCarouselItemMapper,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+
+    companion object {
+        private const val NUMBER_OF_TOP_ITEMS_SHOWN = 10
+    }
 
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState
@@ -24,8 +30,16 @@ class HomeViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             _uiState.value = HomeUiState(
-                artistRepository.getTopArtists(10),
-                trackRepository.getTopTracksWorldwide(10)
+                horizontalCarouselItemMapper.fromArtistListResource(
+                    artistRepository.getTopArtists(
+                        NUMBER_OF_TOP_ITEMS_SHOWN
+                    )
+                ),
+                horizontalCarouselItemMapper.fromTrackListResource(
+                    trackRepository.getTopTracksWorldwide(
+                        NUMBER_OF_TOP_ITEMS_SHOWN
+                    )
+                )
             )
         }
     }
