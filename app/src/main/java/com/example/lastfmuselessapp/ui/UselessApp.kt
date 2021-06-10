@@ -4,7 +4,8 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.List
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -13,8 +14,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import com.example.lastfmuselessapp.R
-import com.example.lastfmuselessapp.ui.home.HomeViewModel
+import com.example.lastfmuselessapp.model.NavbarItem
 import com.example.lastfmuselessapp.ui.home.HomeScreen
+import com.example.lastfmuselessapp.ui.home.HomeViewModel
 import com.example.lastfmuselessapp.ui.onboarding.OnboardingScreen
 
 sealed class Screen(val route: String, @StringRes val resourceId: Int) {
@@ -28,8 +30,8 @@ sealed class Screen(val route: String, @StringRes val resourceId: Int) {
 }
 
 val bottomNavbarItems = listOf(
-    Screen.Home,
-    Screen.Library
+    NavbarItem(Screen.Home, Icons.Default.Home),
+    NavbarItem(Screen.Library, Icons.Default.List)
 )
 
 @Composable
@@ -116,13 +118,13 @@ fun BottomNavigationBar(navController: NavController) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
 
-        bottomNavbarItems.forEach { screen ->
+        bottomNavbarItems.forEach { navbarItem ->
             BottomNavigationItem(
-                icon = { Icon(imageVector = Icons.Filled.Favorite, contentDescription = null) },
-                label = { Text(text = stringResource(id = screen.resourceId)) },
-                selected = currentRoute == screen.route,
+                icon = { Icon(imageVector = navbarItem.icon, contentDescription = null) },
+                label = { Text(text = stringResource(id = navbarItem.screen.resourceId)) },
+                selected = currentRoute == navbarItem.screen.route,
                 onClick = {
-                    navController.navigate(screen.route) {
+                    navController.navigate(navbarItem.screen.route) {
                         launchSingleTop = true
                         popUpTo(navController.graph.startDestinationId)
                     }
