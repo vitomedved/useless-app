@@ -1,6 +1,5 @@
 package com.example.lastfmuselessapp.ui
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -13,21 +12,11 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
-import com.example.lastfmuselessapp.R
 import com.example.lastfmuselessapp.model.NavbarItem
+import com.example.lastfmuselessapp.model.Screen
 import com.example.lastfmuselessapp.ui.home.HomeScreen
 import com.example.lastfmuselessapp.ui.home.HomeViewModel
 import com.example.lastfmuselessapp.ui.onboarding.OnboardingScreen
-
-sealed class Screen(val route: String, @StringRes val resourceId: Int) {
-    object Home : Screen("home", R.string.home)
-    object Artist : Screen("artist/{artistId}", R.string.artist) {
-        fun getArtistIdArgument(): String = "artistId"
-        fun getRouteForArtistId(artistId: String) = "artist/$artistId"
-    }
-
-    object Library : Screen("library", R.string.library)
-}
 
 val bottomNavbarItems = listOf(
     NavbarItem(Screen.Home, Icons.Default.Home),
