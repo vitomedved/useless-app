@@ -1,4 +1,4 @@
-package com.example.lastfmuselessapp.ui.home.composables
+package com.example.lastfmuselessapp.ui.home
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
@@ -12,7 +12,6 @@ import com.example.lastfmuselessapp.ui.composables.HorizontalCarouselItem
 import com.example.lastfmuselessapp.ui.composables.HorizontalScrollingCarousel
 import com.example.lastfmuselessapp.ui.composables.Label
 import com.example.lastfmuselessapp.ui.composables.LoadingAnimation
-import com.example.lastfmuselessapp.ui.composables.model.HorizontalCarouselItemModel
 
 @Composable
 fun HomeScreen(
@@ -29,13 +28,16 @@ fun HomeScreen(
 
         Label(text = "Top artists worldwide")
 
+        val homeScreenCarouselHeight = Modifier.height(150.dp)
+
         HorizontalScrollingCarousel(
+            modifier = homeScreenCarouselHeight,
             itemList = topArtistsWorldwide,
             loading = {
-                LoadingAnimation(resourceName = "Top Artists")
+                LoadingAnimation(modifier = homeScreenCarouselHeight, resourceName = "Top Artists")
             },
             error = { message ->
-                Text(text = "Error happened: $message")
+                Text(modifier = homeScreenCarouselHeight, text = "Error happened: $message")
             },
             item = { artist ->
                 HorizontalCarouselItem(
@@ -53,12 +55,13 @@ fun HomeScreen(
         Label(text = "Top tracks worldwide")
 
         HorizontalScrollingCarousel(
+            modifier = homeScreenCarouselHeight,
             itemList = topTracksWorldwide,
             loading = {
-                LoadingAnimation(resourceName = "Top Tracks")
+                LoadingAnimation(modifier = homeScreenCarouselHeight, resourceName = "Top Tracks")
             },
             error = { message ->
-                Text(text = "Error happened: $message")
+                Text(modifier = homeScreenCarouselHeight, text = "Error happened: $message")
             },
             item = { track ->
                 HorizontalCarouselItem(

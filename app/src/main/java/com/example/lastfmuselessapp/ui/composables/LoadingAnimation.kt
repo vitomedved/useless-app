@@ -11,9 +11,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun LoadingAnimation(resourceName: String) {
+fun LoadingAnimation(
+    modifier: Modifier = Modifier,
+    resourceName: String
+) {
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // todo resources, maybe refactor this loading thing to look nicer

@@ -1,7 +1,7 @@
 package com.example.lastfmuselessapp.ui.home
 
-import androidx.compose.runtime.*
-import androidx.lifecycle.SavedStateHandle
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.lastfmuselessapp.domain.model.Resource

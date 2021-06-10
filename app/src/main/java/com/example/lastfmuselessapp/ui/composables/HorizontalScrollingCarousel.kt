@@ -15,6 +15,7 @@ import com.example.lastfmuselessapp.domain.model.Resource
 
 @Composable
 fun <T> HorizontalScrollingCarousel(
+    modifier: Modifier = Modifier,
     itemList: Resource<List<T>>,
     loading: @Composable () -> Unit,
     error: @Composable (String?) -> Unit,
@@ -27,15 +28,14 @@ fun <T> HorizontalScrollingCarousel(
             itemList.data?.let { nonNullItemList ->
 
                 LazyRow(
-                    modifier = Modifier
+                    modifier = modifier
                         .background(color = MaterialTheme.colors.background)
                         .padding(
                             start = 16.dp,
                             top = 16.dp,
                             end = 16.dp
                         )
-                        .fillMaxWidth()
-                        .height(150.dp),
+                        .fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     items(nonNullItemList) { item ->

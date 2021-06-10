@@ -14,7 +14,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import com.example.lastfmuselessapp.R
 import com.example.lastfmuselessapp.ui.home.HomeViewModel
-import com.example.lastfmuselessapp.ui.home.composables.HomeScreen
+import com.example.lastfmuselessapp.ui.home.HomeScreen
 import com.example.lastfmuselessapp.ui.onboarding.OnboardingScreen
 
 sealed class Screen(val route: String, @StringRes val resourceId: Int) {
@@ -45,12 +45,12 @@ fun UselessApp() {
             isOnboardingDone = true
         })
     } else {
-        UselessAppRoot(navController = navController)
+        UselessAppBody(navController = navController)
     }
 }
 
 @Composable
-fun UselessAppRoot(navController: NavHostController) {
+fun UselessAppBody(navController: NavHostController) {
 
     var shouldShowNavbar by remember { mutableStateOf(true) }
 
