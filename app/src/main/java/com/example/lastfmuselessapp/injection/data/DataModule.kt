@@ -18,8 +18,6 @@ import com.example.lastfmuselessapp.data.repository.ArtistRepositoryImpl
 import com.example.lastfmuselessapp.data.repository.TrackRepositoryImpl
 import com.example.lastfmuselessapp.domain.repository.ArtistRepository
 import com.example.lastfmuselessapp.domain.repository.TrackRepository
-import com.example.lastfmuselessapp.mapper.HorizontalCarouselItemMapper
-import com.example.lastfmuselessapp.mapper.HorizontalCarouselItemMapperImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -117,11 +115,5 @@ object DataModule {
     @Singleton
     fun provideTrackRepository(trackClient: TrackClient): TrackRepository {
         return TrackRepositoryImpl(trackClient)
-    }
-
-    @Provides
-    @Singleton
-    fun provideHorizontalCarouselItemMapper(): HorizontalCarouselItemMapper {
-        return HorizontalCarouselItemMapperImpl()
     }
 }

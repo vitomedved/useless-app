@@ -11,14 +11,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.navArgument
+import androidx.navigation.compose.*
 import com.example.lastfmuselessapp.R
-import com.example.lastfmuselessapp.ui.home.composables.HomeScreen
 import com.example.lastfmuselessapp.ui.home.HomeViewModel
+import com.example.lastfmuselessapp.ui.home.composables.HomeScreen
 import com.example.lastfmuselessapp.ui.onboarding.OnboardingScreen
 
 sealed class Screen(val route: String, @StringRes val resourceId: Int) {
@@ -59,7 +55,7 @@ fun UselessAppRoot(navController: NavHostController) {
     var shouldShowNavbar by remember { mutableStateOf(true) }
 
     Scaffold(bottomBar = {
-        if(shouldShowNavbar) {
+        if (shouldShowNavbar) {
             BottomNavigationBar(navController = navController)
         }
     }) {
@@ -70,11 +66,19 @@ fun UselessAppRoot(navController: NavHostController) {
             composable(route = Screen.Home.route) {
 
                 val homeViewModel: HomeViewModel = hiltViewModel()
-                val homeUiState by homeViewModel.uiState.collectAsState()
+                val topArtistsWorldwide by homeViewModel.topTracksWorldwide
+                val topTracksWorldwide by homeViewModel.topArtistsWorldwide
 
-                HomeScreen(homeUiState = homeUiState, navController = navController)
+                HomeScreen(topArtistsWorldwide = topArtistsWorldwide,
+                    topTracksWorldwide = topTracksWorldwide,
+                    onArtistClicked = { artistId ->
+                        navController.navigate(Screen.Artist.getRouteForArtistId(artistId = artistId))
+                    },
+                    onTrackClicked = { trackId ->
+                        TODO("Not implemented")
+                    })
 
-                if(!shouldShowNavbar) {
+                if (!shouldShowNavbar) {
                     shouldShowNavbar = true
                 }
             }
@@ -82,7 +86,7 @@ fun UselessAppRoot(navController: NavHostController) {
             composable(route = Screen.Library.route) {
                 Text(text = "Library, welcome!")
 
-                if(!shouldShowNavbar) {
+                if (!shouldShowNavbar) {
                     shouldShowNavbar = true
                 }
             }
@@ -99,8 +103,7 @@ fun UselessAppRoot(navController: NavHostController) {
                 shouldShowNavbar = false
 
                 ArtistScreen(
-                    navController = navController,
-                    backstackEntry.arguments?.getString("artistId")
+                    artistId = backstackEntry.arguments?.getString("artistId")
                 )
             }
         }
@@ -129,7 +132,7 @@ fun BottomNavigationBar(navController: NavController) {
 }
 
 @Composable
-fun ArtistScreen(navController: NavController, artistId: String?) {
+fun ArtistScreen(artistId: String?) {
     Column {
         Text("Welcome to screen for artist with ID: $artistId")
     }

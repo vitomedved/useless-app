@@ -19,14 +19,15 @@ import com.google.accompanist.coil.rememberCoilPainter
 
 @Composable
 fun HorizontalCarouselItem(
-    imageUrl: String,
-    text: String,
     modifier: Modifier = Modifier,
-    onItemClicked: () -> Unit
+    id: String,
+    imageUrl: String,
+    label: String,
+    onItemClicked: (String) -> Unit
 ) {
     Column(modifier = modifier
-        .clickable { onItemClicked() }
-            // TODO resources
+        .clickable { onItemClicked(id) }
+        // TODO resources
         .padding(horizontal = 12.dp, vertical = 8.dp)) {
         Image(
             // TODO check if this can and should be in res
@@ -40,7 +41,7 @@ fun HorizontalCarouselItem(
         )
 
         Text(
-            text = text,
+            text = label,
             style = MaterialTheme.typography.caption,
             // todo res? all other resources same comment
             maxLines = 2,
@@ -57,7 +58,7 @@ fun HorizontalCarouselItem(
 @Preview("Carousel item")
 @Composable
 fun PreviewItem() {
-    HorizontalCarouselItem(imageUrl = "", text = "Test item") {
+    HorizontalCarouselItem(id = "id", imageUrl = "imageUrl", label = "label") {
 
     }
 }
