@@ -63,7 +63,10 @@ fun UselessAppBody(navController: NavHostController) {
                 HomeScreen(topArtistsWorldwide = topArtistsWorldwide,
                     topTracksWorldwide = topTracksWorldwide,
                     onArtistClicked = { artistId ->
-                        navController.navigate(Screen.Artist.getRouteForArtistId(artistId = artistId))
+                        // TODO what if ID is missing?
+                        if(artistId.isNotEmpty()) {
+                            navController.navigate(Screen.Artist.getRouteForArtistId(artistId = artistId))
+                        }
                     },
                     onTrackClicked = { trackId ->
                         TODO("Not implemented")
