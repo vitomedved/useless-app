@@ -5,6 +5,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -14,12 +15,14 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import com.example.lastfmuselessapp.model.NavbarItem
 import com.example.lastfmuselessapp.model.Screen
+import com.example.lastfmuselessapp.ui.discover.DiscoverScreen
 import com.example.lastfmuselessapp.ui.home.HomeScreen
 import com.example.lastfmuselessapp.ui.home.HomeViewModel
 import com.example.lastfmuselessapp.ui.onboarding.OnboardingScreen
 
 val bottomNavbarItems = listOf(
     NavbarItem(Screen.Home, Icons.Default.Home),
+    NavbarItem(Screen.Discover, Icons.Default.Search),
     NavbarItem(Screen.Library, Icons.Default.List)
 )
 
@@ -64,7 +67,7 @@ fun UselessAppBody(navController: NavHostController) {
                     topTracksWorldwide = topTracksWorldwide,
                     onArtistClicked = { artistId ->
                         // TODO what if ID is missing?
-                        if(artistId.isNotEmpty()) {
+                        if (artistId.isNotEmpty()) {
                             navController.navigate(Screen.Artist.getRouteForArtistId(artistId = artistId))
                         }
                     },
@@ -75,6 +78,10 @@ fun UselessAppBody(navController: NavHostController) {
                 if (!shouldShowNavbar) {
                     shouldShowNavbar = true
                 }
+            }
+
+            composable(route = Screen.Discover.route) {
+                DiscoverScreen()
             }
 
             composable(route = Screen.Library.route) {
@@ -113,7 +120,7 @@ fun BottomNavigationBar(navController: NavController) {
         bottomNavbarItems.forEach { navbarItem ->
             BottomNavigationItem(
                 icon = { Icon(imageVector = navbarItem.icon, contentDescription = null) },
-                label = { Text(text = stringResource(id = navbarItem.screen.resourceId)) },
+                label = { Text(text = stringResource(id = navbarItem.screen.nameResource)) },
                 selected = currentRoute == navbarItem.screen.route,
                 onClick = {
                     navController.navigate(navbarItem.screen.route) {
