@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -32,19 +33,21 @@ fun DiscoverScreen() {
 
     val (text, onTextChange) = rememberSaveable { mutableStateOf("") }
 
-    var elevateSearchBar by remember { mutableStateOf(false) }
+    val (focused, onFocusChanged) = remember { mutableStateOf(false) }
 
     SearchTextFieldBackground(
-        elevate = elevateSearchBar,
         modifier = Modifier
-            .padding(12.dp)
             .fillMaxWidth()
+            .fillMaxHeight(0.08f)
     ) {
         SearchTextField(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .fillMaxHeight(),
             text = text,
-            onTextChanged = onTextChange
+            focused = focused,
+            onTextChanged = onTextChange,
+            onFocusChanged = onFocusChanged
         )
     }
 }
@@ -52,22 +55,16 @@ fun DiscoverScreen() {
 @Composable
 fun SearchTextFieldBackground(
     modifier: Modifier = Modifier,
-    elevate: Boolean,
     content: @Composable RowScope.() -> Unit
 ) {
-
-    val animatedElevation by animateDpAsState(
-        targetValue = if (elevate) 1.dp else 0.dp,
-        animationSpec = TweenSpec(500)
-    )
-
     Surface(
         color = MaterialTheme.colors.onSurface.copy(alpha = 0.05f),
-        elevation = animatedElevation,
         shape = RectangleShape
     ) {
         Row(
             modifier = modifier.animateContentSize(animationSpec = TweenSpec(300)),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
             content = content
         )
     }
@@ -79,19 +76,21 @@ fun SearchTextFieldBackground(
 fun SearchTextField(
     modifier: Modifier = Modifier,
     text: String,
-    onTextChanged: (String) -> Unit // TODO u VM napravi replace "\n" u "" i "\r\n" u ""
+    focused: Boolean = false,
+    onTextChanged: (String) -> Unit, // TODO u VM napravi replace "\n" u "" i "\r\n" u ""
+    onFocusChanged: (Boolean) -> Unit
 ) {
-    val (focused, onFocused) = remember { mutableStateOf(false) }
-
     val backArrowAlpha by animateFloatAsState(if (focused) 1f else 0f)
 
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusRequester = FocusRequester()
     val focusManager = LocalFocusManager.current
 
+    val padding = animateDpAsState(targetValue = if (focused) 0.dp else 12.dp)
+    val trailingIconAspectRatio = animateFloatAsState(targetValue = if (focused) 0.7f else 1f)
 
     TextField(
-        value = text,
+        value = if(focused) text else "",
         onValueChange = onTextChanged,
         singleLine = true,
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
@@ -106,6 +105,8 @@ fun SearchTextField(
                     Icons.Default.ArrowBack,
                     stringResource(id = R.string.back_arrow),
                     modifier = Modifier
+                        .aspectRatio(trailingIconAspectRatio.value)
+                        .fillMaxHeight()
                         .clickable { focusManager.clearFocus() }
                         .padding(8.dp)
                         .alpha(backArrowAlpha)
@@ -119,10 +120,13 @@ fun SearchTextField(
                 modifier = Modifier
                     .clickable { /*TODO*/ }
                     .padding(8.dp)
+                    .aspectRatio(trailingIconAspectRatio.value)
+                    .fillMaxHeight()
             )
         },
         modifier = modifier
-            .onFocusEvent { onFocused(it.isFocused) }
+            .padding(padding.value)
+            .onFocusEvent { onFocusChanged(it.isFocused) }
             .focusRequester(focusRequester)
     )
 }
