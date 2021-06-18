@@ -7,6 +7,8 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -44,6 +46,7 @@ fun UselessApp() {
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun UselessAppBody(navController: NavHostController) {
 
@@ -84,15 +87,27 @@ fun UselessAppBody(navController: NavHostController) {
             composable(route = Screen.Discover.route) {
 
                 val discoverViewModel: DiscoverViewModel = hiltViewModel()
-                val searchText by discoverViewModel.searchText
+                val searchText by discoverViewModel.searchState
                 val focused by discoverViewModel.focused
+                val availableSearchCategories by discoverViewModel.availableSearchCategories
+                val selectedSearchCategory by discoverViewModel.selectedSearchCategory
+                val searchableItemsList by discoverViewModel.searchableItemsList
+
+                val keyboardController = LocalSoftwareKeyboardController.current
 
                 DiscoverScreen(
                     searchText = searchText,
                     focused = focused,
+                    availableSearchCategories = availableSearchCategories,
+                    selectedSearchCategory = selectedSearchCategory,
+                    searchableItemsList = searchableItemsList,
                     onSearchTextChanged = discoverViewModel::onSearchTextChanged,
                     onSearchTextCleared = discoverViewModel::onSearchTextCleared,
-                    onFocusChanged = discoverViewModel::onFocusChanged
+                    onFocusChanged = discoverViewModel::onFocusChanged,
+                    onSearchClicked = {
+                        keyboardController?.hide()
+                    },
+                    onSelectedSearchCategoryChanged = discoverViewModel::onSelectedSearchCategoryChanged
                 )
             }
 

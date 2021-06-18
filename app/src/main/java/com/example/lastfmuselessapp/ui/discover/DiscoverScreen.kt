@@ -1,8 +1,5 @@
 package com.example.lastfmuselessapp.ui.discover
 
-import androidx.activity.OnBackPressedCallback
-import androidx.activity.addCallback
-import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.animation.*
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.core.animateDpAsState
@@ -28,20 +25,26 @@ import androidx.compose.ui.focus.isFocused
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.example.lastfmuselessapp.R
+import com.example.lastfmuselessapp.domain.model.Searchable
+import com.example.lastfmuselessapp.domain.model.search.SearchCategoryModel
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun DiscoverScreen(
     searchText: String,
     focused: Boolean,
+    availableSearchCategories: List<SearchCategoryModel>,
+    selectedSearchCategory: SearchCategoryModel.SearchCategory,
+    searchableItemsList: List<Searchable>,
     onSearchTextChanged: (String) -> Unit,
     onSearchTextCleared: () -> Unit,
-    onFocusChanged: (Boolean) -> Unit
+    onFocusChanged: (Boolean) -> Unit,
+    onSearchClicked: () -> Unit,
+    onSelectedSearchCategoryChanged: (SearchCategoryModel.SearchCategory) -> Unit
 ) {
 
     SearchTextFieldBackground(
@@ -54,10 +57,12 @@ fun DiscoverScreen(
                 .fillMaxWidth()
                 .fillMaxHeight(),
             text = searchText,
+            hintText = "Search",
             focused = focused,
             onTextChanged = onSearchTextChanged,
             onTextCleared = onSearchTextCleared,
-            onFocusChanged = onFocusChanged
+            onFocusChanged = onFocusChanged,
+            onSearchClicked = onSearchClicked
         )
     }
 }
@@ -86,14 +91,15 @@ fun SearchTextFieldBackground(
 fun SearchTextField(
     modifier: Modifier = Modifier,
     text: String,
+    hintText: String,
     focused: Boolean = false,
     onTextChanged: (String) -> Unit,
     onTextCleared: () -> Unit,
-    onFocusChanged: (Boolean) -> Unit
+    onFocusChanged: (Boolean) -> Unit,
+    onSearchClicked: () -> Unit
 ) {
     val backArrowAlpha by animateFloatAsState(if (focused) 1f else 0f)
 
-    val keyboardController = LocalSoftwareKeyboardController.current
     val focusRequester = FocusRequester()
     val focusManager = LocalFocusManager.current
 
@@ -106,7 +112,9 @@ fun SearchTextField(
             onValueChange = onTextChanged,
             singleLine = true,
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
-            keyboardActions = KeyboardActions(onSearch = { keyboardController?.hide() }),
+            keyboardActions = KeyboardActions(onSearch = {
+                onSearchClicked()
+            }),
             leadingIcon = {
                 AnimatedVisibility(
                     visible = focused,
@@ -172,7 +180,7 @@ fun SearchTextField(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                Text(text = "Search")
+                Text(text = hintText)
             }
         }
     }

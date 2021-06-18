@@ -1,23 +1,48 @@
 package com.example.lastfmuselessapp.ui.discover
 
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.example.lastfmuselessapp.domain.model.Searchable
+import com.example.lastfmuselessapp.domain.model.search.SearchCategoryModel
+import com.example.lastfmuselessapp.domain.provider.SearchCategoryProvider
+import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
-class DiscoverViewModel @Inject constructor() : ViewModel() {
+@HiltViewModel
+class DiscoverViewModel @Inject constructor(
+    searchCategoryProvider: SearchCategoryProvider,
+) : ViewModel() {
 
-    var searchText: MutableState<String> = mutableStateOf("")
+    var searchState = mutableStateOf("")
         private set
 
-    var focused: MutableState<Boolean> = mutableStateOf(false)
+    var focused = mutableStateOf(false)
+        private set
+
+    var availableSearchCategories =
+        mutableStateOf(searchCategoryProvider.provideAvailableSearchCategories())
+        private set
+
+    var selectedSearchCategory =
+        mutableStateOf(searchCategoryProvider.provideDefaultSearchCategory())
+        private set
+
+    var searchableItemsList = mutableStateOf<List<Searchable>>(listOf())
+        private set
 
     fun onSearchTextCleared() {
-        searchText.value = ""
+        searchState.value = ""
+        searchableItemsList.value = listOf()
     }
 
     fun onSearchTextChanged(newText: String) {
-        searchText.value = newText.replace("\n", "").replace("\r\n", "")
+        searchState.value = newText.replace("\n", "").replace("\r\n", "")
+        // TODO search for item based on selected searchCategory and searchText
+    }
+
+    fun onSelectedSearchCategoryChanged(searchCategory: SearchCategoryModel.SearchCategory) {
+        selectedSearchCategory.value = searchCategory
+        // TODO search for new item category if text is not empty
     }
 
     fun onFocusChanged(focused: Boolean) {
