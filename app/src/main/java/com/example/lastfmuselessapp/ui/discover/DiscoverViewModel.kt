@@ -17,7 +17,7 @@ class DiscoverViewModel @Inject constructor() : ViewModel() {
     }
 
     fun onSearchTextChanged(newText: String) {
-        searchText.value = newText
+        searchText.value = newText.replace("\n", "").replace("\r\n", "")
     }
 
     fun onFocusChanged(focused: Boolean) {

@@ -87,7 +87,7 @@ fun SearchTextField(
     modifier: Modifier = Modifier,
     text: String,
     focused: Boolean = false,
-    onTextChanged: (String) -> Unit, // TODO u VM napravi replace "\n" u "" i "\r\n" u ""
+    onTextChanged: (String) -> Unit,
     onTextCleared: () -> Unit,
     onFocusChanged: (Boolean) -> Unit
 ) {
