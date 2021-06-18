@@ -1,5 +1,8 @@
 package com.example.lastfmuselessapp.ui.discover
 
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.animation.*
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.core.animateDpAsState
@@ -11,14 +14,18 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.PhotoCamera
-import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.focus.*
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.isFocused
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -29,11 +36,13 @@ import com.example.lastfmuselessapp.R
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun DiscoverScreen() {
-
-    val (text, onTextChange) = rememberSaveable { mutableStateOf("") }
-
-    val (focused, onFocusChanged) = remember { mutableStateOf(false) }
+fun DiscoverScreen(
+    searchText: String,
+    focused: Boolean,
+    onSearchTextChanged: (String) -> Unit,
+    onSearchTextCleared: () -> Unit,
+    onFocusChanged: (Boolean) -> Unit
+) {
 
     SearchTextFieldBackground(
         modifier = Modifier
@@ -44,9 +53,10 @@ fun DiscoverScreen() {
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight(),
-            text = text,
+            text = searchText,
             focused = focused,
-            onTextChanged = onTextChange,
+            onTextChanged = onSearchTextChanged,
+            onTextCleared = onSearchTextCleared,
             onFocusChanged = onFocusChanged
         )
     }
@@ -78,6 +88,7 @@ fun SearchTextField(
     text: String,
     focused: Boolean = false,
     onTextChanged: (String) -> Unit, // TODO u VM napravi replace "\n" u "" i "\r\n" u ""
+    onTextCleared: () -> Unit,
     onFocusChanged: (Boolean) -> Unit
 ) {
     val backArrowAlpha by animateFloatAsState(if (focused) 1f else 0f)
@@ -89,44 +100,80 @@ fun SearchTextField(
     val padding = animateDpAsState(targetValue = if (focused) 0.dp else 12.dp)
     val trailingIconAspectRatio = animateFloatAsState(targetValue = if (focused) 0.7f else 1f)
 
-    TextField(
-        value = if(focused) text else "",
-        onValueChange = onTextChanged,
-        singleLine = true,
-        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
-        keyboardActions = KeyboardActions(onSearch = { keyboardController?.hide() }),
-        leadingIcon = {
-            AnimatedVisibility(
-                visible = focused,
-                enter = fadeIn(),
-                exit = fadeOut()
+    Box(modifier = Modifier.fillMaxSize()) {
+        TextField(
+            value = text,
+            onValueChange = onTextChanged,
+            singleLine = true,
+            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
+            keyboardActions = KeyboardActions(onSearch = { keyboardController?.hide() }),
+            leadingIcon = {
+                AnimatedVisibility(
+                    visible = focused,
+                    enter = fadeIn(),
+                    exit = fadeOut()
+                ) {
+                    Icon(
+                        Icons.Default.ArrowBack,
+                        stringResource(id = R.string.back_arrow),
+                        modifier = Modifier
+                            .aspectRatio(trailingIconAspectRatio.value)
+                            .fillMaxHeight()
+                            .clickable { focusManager.clearFocus() }
+                            .padding(8.dp)
+                            .alpha(backArrowAlpha)
+                    )
+                }
+            },
+            trailingIcon = {
+                Crossfade(targetState = text.isEmpty()) { isEmpty ->
+
+                    when (isEmpty) {
+                        true -> {
+                            Icon(
+                                Icons.Default.PhotoCamera,
+                                stringResource(id = R.string.camera_icon),
+                                modifier = Modifier
+                                    .clickable { /*TODO*/ }
+                                    .padding(8.dp)
+                                    .aspectRatio(trailingIconAspectRatio.value)
+                                    .fillMaxHeight()
+                            )
+                        }
+                        false -> {
+                            Icon(
+                                Icons.Default.Clear,
+                                stringResource(id = R.string.clear_text_icon),
+                                modifier = Modifier
+                                    .clickable { onTextCleared() }
+                                    .padding(8.dp)
+                                    .aspectRatio(trailingIconAspectRatio.value)
+                                    .fillMaxHeight()
+                            )
+                        }
+                    }
+                }
+            },
+            modifier = modifier
+                .padding(padding.value)
+                .onFocusEvent {
+                    onFocusChanged(it.isFocused)
+                }
+                .focusRequester(focusRequester)
+        )
+
+        AnimatedVisibility(
+            visible = !focused,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
             ) {
-                Icon(
-                    Icons.Default.ArrowBack,
-                    stringResource(id = R.string.back_arrow),
-                    modifier = Modifier
-                        .aspectRatio(trailingIconAspectRatio.value)
-                        .fillMaxHeight()
-                        .clickable { focusManager.clearFocus() }
-                        .padding(8.dp)
-                        .alpha(backArrowAlpha)
-                )
+                Text(text = "Search")
             }
-        },
-        trailingIcon = {
-            Icon(
-                Icons.Default.PhotoCamera,
-                stringResource(id = R.string.camera_icon),
-                modifier = Modifier
-                    .clickable { /*TODO*/ }
-                    .padding(8.dp)
-                    .aspectRatio(trailingIconAspectRatio.value)
-                    .fillMaxHeight()
-            )
-        },
-        modifier = modifier
-            .padding(padding.value)
-            .onFocusEvent { onFocusChanged(it.isFocused) }
-            .focusRequester(focusRequester)
-    )
+        }
+    }
 }

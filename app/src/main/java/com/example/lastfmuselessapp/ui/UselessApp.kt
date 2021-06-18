@@ -16,6 +16,7 @@ import androidx.navigation.compose.*
 import com.example.lastfmuselessapp.model.NavbarItem
 import com.example.lastfmuselessapp.model.Screen
 import com.example.lastfmuselessapp.ui.discover.DiscoverScreen
+import com.example.lastfmuselessapp.ui.discover.DiscoverViewModel
 import com.example.lastfmuselessapp.ui.home.HomeScreen
 import com.example.lastfmuselessapp.ui.home.HomeViewModel
 import com.example.lastfmuselessapp.ui.onboarding.OnboardingScreen
@@ -72,7 +73,7 @@ fun UselessAppBody(navController: NavHostController) {
                         }
                     },
                     onTrackClicked = { trackId ->
-                        TODO("Not implemented")
+                        // TODO
                     })
 
                 if (!shouldShowNavbar) {
@@ -81,7 +82,18 @@ fun UselessAppBody(navController: NavHostController) {
             }
 
             composable(route = Screen.Discover.route) {
-                DiscoverScreen()
+
+                val discoverViewModel: DiscoverViewModel = hiltViewModel()
+                val searchText by discoverViewModel.searchText
+                val focused by discoverViewModel.focused
+
+                DiscoverScreen(
+                    searchText = searchText,
+                    focused = focused,
+                    onSearchTextChanged = discoverViewModel::onSearchTextChanged,
+                    onSearchTextCleared = discoverViewModel::onSearchTextCleared,
+                    onFocusChanged = discoverViewModel::onFocusChanged
+                )
             }
 
             composable(route = Screen.Library.route) {

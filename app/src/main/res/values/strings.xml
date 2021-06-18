@@ -7,6 +7,7 @@
     <string name="library">Library</string>
 
     <string name="camera_icon">Camera icon</string>
+    <string name="clear_text_icon">Clear text icon</string>
     <string name="back_arrow">Back arrow</string>
 
 </resources>
