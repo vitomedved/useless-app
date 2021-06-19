@@ -31,6 +31,10 @@ import androidx.compose.ui.unit.dp
 import com.example.lastfmuselessapp.R
 import com.example.lastfmuselessapp.domain.model.Searchable
 import com.example.lastfmuselessapp.domain.model.search.SearchCategoryModel
+import com.example.lastfmuselessapp.ui.composables.search.SearchTextField
+import com.example.lastfmuselessapp.ui.composables.search.SearchTextFieldBackButton
+import com.example.lastfmuselessapp.ui.composables.search.SearchTextFieldBackground
+import com.example.lastfmuselessapp.ui.composables.search.SearchTextFieldToggleableClearTextAndPhotoActionIcon
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -60,128 +64,21 @@ fun DiscoverScreen(
             hintText = "Search",
             focused = focused,
             onTextChanged = onSearchTextChanged,
-            onTextCleared = onSearchTextCleared,
             onFocusChanged = onFocusChanged,
-            onSearchClicked = onSearchClicked
-        )
-    }
-}
-
-@Composable
-fun SearchTextFieldBackground(
-    modifier: Modifier = Modifier,
-    content: @Composable RowScope.() -> Unit
-) {
-    Surface(
-        color = MaterialTheme.colors.onSurface.copy(alpha = 0.05f),
-        shape = RectangleShape
-    ) {
-        Row(
-            modifier = modifier.animateContentSize(animationSpec = TweenSpec(300)),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-            content = content
-        )
-    }
-}
-
-@ExperimentalAnimationApi
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-fun SearchTextField(
-    modifier: Modifier = Modifier,
-    text: String,
-    hintText: String,
-    focused: Boolean = false,
-    onTextChanged: (String) -> Unit,
-    onTextCleared: () -> Unit,
-    onFocusChanged: (Boolean) -> Unit,
-    onSearchClicked: () -> Unit
-) {
-    val backArrowAlpha by animateFloatAsState(if (focused) 1f else 0f)
-
-    val focusRequester = FocusRequester()
-    val focusManager = LocalFocusManager.current
-
-    val padding = animateDpAsState(targetValue = if (focused) 0.dp else 12.dp)
-    val trailingIconAspectRatio = animateFloatAsState(targetValue = if (focused) 0.7f else 1f)
-
-    Box(modifier = Modifier.fillMaxSize()) {
-        TextField(
-            value = text,
-            onValueChange = onTextChanged,
-            singleLine = true,
-            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
-            keyboardActions = KeyboardActions(onSearch = {
-                onSearchClicked()
-            }),
+            onSearchClicked = onSearchClicked,
             leadingIcon = {
-                AnimatedVisibility(
-                    visible = focused,
-                    enter = fadeIn(),
-                    exit = fadeOut()
-                ) {
-                    Icon(
-                        Icons.Default.ArrowBack,
-                        stringResource(id = R.string.back_arrow),
-                        modifier = Modifier
-                            .aspectRatio(trailingIconAspectRatio.value)
-                            .fillMaxHeight()
-                            .clickable { focusManager.clearFocus() }
-                            .padding(8.dp)
-                            .alpha(backArrowAlpha)
-                    )
-                }
+                SearchTextFieldBackButton(focused)
             },
             trailingIcon = {
-                Crossfade(targetState = text.isEmpty()) { isEmpty ->
-
-                    when (isEmpty) {
-                        true -> {
-                            Icon(
-                                Icons.Default.PhotoCamera,
-                                stringResource(id = R.string.camera_icon),
-                                modifier = Modifier
-                                    .clickable { /*TODO*/ }
-                                    .padding(8.dp)
-                                    .aspectRatio(trailingIconAspectRatio.value)
-                                    .fillMaxHeight()
-                            )
-                        }
-                        false -> {
-                            Icon(
-                                Icons.Default.Clear,
-                                stringResource(id = R.string.clear_text_icon),
-                                modifier = Modifier
-                                    .clickable { onTextCleared() }
-                                    .padding(8.dp)
-                                    .aspectRatio(trailingIconAspectRatio.value)
-                                    .fillMaxHeight()
-                            )
-                        }
+                SearchTextFieldToggleableClearTextAndPhotoActionIcon(
+                    textFieldFocused = focused,
+                    textEmpty = searchText.isEmpty(),
+                    onTextCleared = onSearchTextCleared,
+                    onPhotoActionClicked = {
+                        // TODO
                     }
-                }
-            },
-            modifier = modifier
-                .padding(padding.value)
-                .onFocusEvent {
-                    onFocusChanged(it.isFocused)
-                }
-                .focusRequester(focusRequester)
-        )
-
-        AnimatedVisibility(
-            visible = !focused,
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
-            Row(
-                modifier = Modifier.fillMaxSize(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text(text = hintText)
+                )
             }
-        }
+        )
     }
 }

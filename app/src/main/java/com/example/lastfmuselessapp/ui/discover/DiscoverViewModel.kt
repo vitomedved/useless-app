@@ -38,6 +38,8 @@ class DiscoverViewModel @Inject constructor(
     fun onSearchTextChanged(newText: String) {
         searchState.value = newText.replace("\n", "").replace("\r\n", "")
         // TODO search for item based on selected searchCategory and searchText
+
+        // TODO add the search possibility after every letter as some kind of settings option "Dynamic search"
     }
 
     fun onSelectedSearchCategoryChanged(searchCategory: SearchCategoryModel.SearchCategory) {
