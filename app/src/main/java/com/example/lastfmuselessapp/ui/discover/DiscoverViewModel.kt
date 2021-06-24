@@ -2,18 +2,33 @@ package com.example.lastfmuselessapp.ui.discover
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.lastfmuselessapp.domain.model.Resource
 import com.example.lastfmuselessapp.domain.model.Searchable
 import com.example.lastfmuselessapp.domain.model.search.SearchCategoryModel
 import com.example.lastfmuselessapp.domain.provider.SearchCategoryProvider
+import com.example.lastfmuselessapp.domain.repository.ArtistRepository
+import com.example.lastfmuselessapp.domain.repository.TrackRepository
+import com.example.lastfmuselessapp.domain.time.TaskScheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class DiscoverViewModel @Inject constructor(
     searchCategoryProvider: SearchCategoryProvider,
+    private val artistRepository: ArtistRepository,
+    private val trackRepository: TrackRepository,
+    private val taskScheduler: TaskScheduler
 ) : ViewModel() {
 
-    var searchState = mutableStateOf("")
+    companion object {
+        private const val SEARCH_ITEM_JOB_TAG = "search_item"
+        private const val USER_INTERACTION_TIMEOUT_MILLIS = 3000L
+    }
+
+    var searchInputValue = mutableStateOf("")
         private set
 
     var focused = mutableStateOf(false)
@@ -27,30 +42,84 @@ class DiscoverViewModel @Inject constructor(
         mutableStateOf(searchCategoryProvider.provideDefaultSearchCategory())
         private set
 
-    var searchableItemsList = mutableStateOf<List<Searchable>>(listOf())
+    var searchableItemsList = mutableStateOf<Resource<List<Searchable>>>(Resource.Idle())
         private set
 
+    private var searchItemsJob: Job? = null
+
     fun onSearchTextCleared() {
-        searchState.value = ""
-        searchableItemsList.value = listOf()
+        searchInputValue.value = ""
+        searchableItemsList.value = Resource.Idle()
     }
 
     fun onSearchTextChanged(newText: String) {
-        searchState.value = newText.replace("\n", "").replace("\r\n", "")
-        // TODO search for item based on selected searchCategory and searchText
+        searchInputValue.value = newText.replace("\n", "").replace("\r\n", "")
 
-        // TODO add the search possibility after every letter as some kind of settings option "Dynamic search"
+        searchCurrentItemCancellable(delay = USER_INTERACTION_TIMEOUT_MILLIS)
     }
 
-    fun onSelectedSearchCategoryChanged(searchCategory: SearchCategoryModel.SearchCategory) {
+    private fun searchCurrentItemCancellable(delay: Long = 0) {
+        cancelSearchItemsJobIfPossible()
+
+        if (searchInputValue.value.isEmpty()) {
+            return
+        }
+
+        taskScheduler.executeDelayed(SEARCH_ITEM_JOB_TAG, delay) {
+            initializeAndStartSearchItemsJob()
+        }
+    }
+
+    private fun cancelSearchItemsJobIfPossible() {
+        searchItemsJob?.cancel()
+    }
+
+    private fun initializeAndStartSearchItemsJob() {
+        searchItemsJob = viewModelScope.launch {
+            when (selectedSearchCategory.value) {
+                SearchCategoryModel.SearchCategory.ARTIST -> searchArtists()
+                SearchCategoryModel.SearchCategory.TRACK -> searchTracks()
+                else -> TODO("Unsupported search category selected")
+            }
+        }
+
+        searchItemsJob?.invokeOnCompletion {
+            searchItemsJob = null
+        }
+    }
+
+    private suspend fun searchArtists() {
+        // TODO optionally add Idle status to the list here in order to clear the view, maybe even loading status
+
+        // TODO item to searchable somehow
+        searchableItemsList.value =
+            artistRepository.fetchArtist(searchInputValue.value) as Resource<List<Searchable>>
+    }
+
+    private fun searchTracks() {
+        println("TODO search tracks...")
+    }
+
+    fun onCategorySelected(searchCategory: SearchCategoryModel.SearchCategory) {
         selectedSearchCategory.value = searchCategory
-        // TODO search for new item category if text is not empty
+
+        searchCurrentItemCancellable()
     }
 
     fun onFocusChanged(focused: Boolean) {
-        this.focused.value = focused
-        if (!focused) {
-            onSearchTextCleared()
+
+        this.focused.value = if (focused) {
+            true
+        } else {
+            searchInputValue.value.isNotEmpty()
         }
+    }
+
+    fun onSearchActionClicked() {
+        searchCurrentItemCancellable()
+    }
+
+    fun onSearchInputBackButtonClicked() {
+        searchInputValue.value = ""
     }
 }

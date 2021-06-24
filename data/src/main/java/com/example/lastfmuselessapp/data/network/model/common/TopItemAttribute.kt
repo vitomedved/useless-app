@@ -2,7 +2,7 @@ package com.example.lastfmuselessapp.data.network.model.common
 
 import com.google.gson.annotations.SerializedName
 
-data class Attribute(
+data class TopItemAttribute(
     @SerializedName("page")
     val page: String,
     @SerializedName("perPage")

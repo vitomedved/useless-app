@@ -87,7 +87,7 @@ fun UselessAppBody(navController: NavHostController) {
             composable(route = Screen.Discover.route) {
 
                 val discoverViewModel: DiscoverViewModel = hiltViewModel()
-                val searchText by discoverViewModel.searchState
+                val searchText by discoverViewModel.searchInputValue
                 val focused by discoverViewModel.focused
                 val availableSearchCategories by discoverViewModel.availableSearchCategories
                 val selectedSearchCategory by discoverViewModel.selectedSearchCategory
@@ -106,8 +106,10 @@ fun UselessAppBody(navController: NavHostController) {
                     onFocusChanged = discoverViewModel::onFocusChanged,
                     onSearchClicked = {
                         keyboardController?.hide()
+                        discoverViewModel.onSearchActionClicked()
                     },
-                    onSelectedSearchCategoryChanged = discoverViewModel::onSelectedSearchCategoryChanged
+                    onCategorySelected = discoverViewModel::onCategorySelected,
+                    onSearchInputBackButtonClicked = discoverViewModel::onSearchInputBackButtonClicked
                 )
             }
 

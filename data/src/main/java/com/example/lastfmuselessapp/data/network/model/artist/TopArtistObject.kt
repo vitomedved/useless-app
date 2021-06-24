@@ -3,7 +3,7 @@ package com.example.lastfmuselessapp.data.network.model.artist
 import com.example.lastfmuselessapp.data.network.model.common.Image
 import com.google.gson.annotations.SerializedName
 
-data class ArtistObject(
+data class TopArtistObject(
     @SerializedName("image")
     val imageList: List<Image>,
     @SerializedName("listeners")

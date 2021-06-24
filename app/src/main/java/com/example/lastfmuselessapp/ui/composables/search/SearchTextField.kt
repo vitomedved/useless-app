@@ -17,10 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.isFocused
-import androidx.compose.ui.focus.onFocusEvent
+import androidx.compose.ui.focus.*
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -86,7 +83,10 @@ fun SearchTextField(
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun SearchTextFieldBackButton(textFieldFocused: Boolean) {
+fun SearchTextFieldBackButton(
+    textFieldFocused: Boolean,
+    onBackButtonClicked: () -> Unit
+) {
 
     val focusManager = LocalFocusManager.current
 
@@ -103,7 +103,10 @@ fun SearchTextFieldBackButton(textFieldFocused: Boolean) {
             modifier = Modifier
                 .aspectRatio(iconAspectRation.value)
                 .fillMaxHeight()
-                .clickable { focusManager.clearFocus() }
+                .clickable {
+                    focusManager.clearFocus()
+                    onBackButtonClicked()
+                }
                 .padding(8.dp)
         )
     }
@@ -117,7 +120,9 @@ fun SearchTextFieldToggleableClearTextAndPhotoActionIcon(
     onPhotoActionClicked: () -> Unit
 ) {
 
-    val trailingIconAspectRatio = animateFloatAsState(targetValue = if (textFieldFocused) 0.7f else 1f)
+    val focusManager = LocalFocusManager.current
+    val trailingIconAspectRatio =
+        animateFloatAsState(targetValue = if (textFieldFocused) 0.7f else 1f)
 
     Crossfade(targetState = textEmpty) { isEmpty ->
         when (isEmpty) {
@@ -137,7 +142,10 @@ fun SearchTextFieldToggleableClearTextAndPhotoActionIcon(
                     Icons.Default.Clear,
                     stringResource(id = R.string.clear_text_icon),
                     modifier = Modifier
-                        .clickable { onTextCleared() }
+                        .clickable {
+                            onTextCleared()
+                            focusManager.moveFocus(FocusDirection.Left)
+                        }
                         .padding(8.dp)
                         .aspectRatio(trailingIconAspectRatio.value)
                         .fillMaxHeight()
