@@ -18,12 +18,14 @@ fun HomeScreen(
     topArtistsWorldwide: Resource<List<Artist>>,
     topTracksWorldwide: Resource<List<Track>>,
     onArtistClicked: (String) -> Unit,
-    onTrackClicked: (String) -> Unit
+    onTrackClicked: (String) -> Unit,
+    innerPaddingValues: PaddingValues
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxWidth()
+            .padding(innerPaddingValues)
     ) {
 
         Label(text = "Top artists worldwide")

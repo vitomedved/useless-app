@@ -56,7 +56,7 @@ fun UselessAppBody(navController: NavHostController) {
         if (shouldShowNavbar) {
             BottomNavigationBar(navController = navController)
         }
-    }) {
+    }) { innerPaddingValues ->
         NavHost(
             navController = navController,
             startDestination = Screen.Home.route
@@ -77,7 +77,8 @@ fun UselessAppBody(navController: NavHostController) {
                     },
                     onTrackClicked = { trackId ->
                         // TODO
-                    })
+                    },
+                innerPaddingValues = innerPaddingValues)
 
                 if (!shouldShowNavbar) {
                     shouldShowNavbar = true
@@ -109,11 +110,13 @@ fun UselessAppBody(navController: NavHostController) {
                         discoverViewModel.onSearchActionClicked()
                     },
                     onCategorySelected = discoverViewModel::onCategorySelected,
-                    onSearchInputBackButtonClicked = discoverViewModel::onSearchInputBackButtonClicked
+                    onSearchInputBackButtonClicked = discoverViewModel::onSearchInputBackButtonClicked,
+                    innerPaddingValues = innerPaddingValues
                 )
             }
 
             composable(route = Screen.Library.route) {
+                // innerPaddingValues: PaddingValues
                 Text(text = "Library, welcome!")
 
                 if (!shouldShowNavbar) {
@@ -132,6 +135,7 @@ fun UselessAppBody(navController: NavHostController) {
 
                 shouldShowNavbar = false
 
+                // innerPaddingValues: PaddingValues
                 ArtistScreen(
                     artistId = backstackEntry.arguments?.getString("artistId")
                 )
@@ -152,11 +156,14 @@ fun BottomNavigationBar(navController: NavController) {
                 label = { Text(text = stringResource(id = navbarItem.screen.nameResource)) },
                 selected = currentRoute == navbarItem.screen.route,
                 onClick = {
-                    navController.navigate(navbarItem.screen.route) {
-                        launchSingleTop = true
-                        popUpTo(navController.graph.startDestinationId)
+                    if (currentRoute != navbarItem.screen.route) {
+                        navController.navigate(navbarItem.screen.route) {
+                            launchSingleTop = true
+                            popUpTo(navController.graph.startDestinationId)
+                        }
                     }
-                })
+                }
+            )
         }
     }
 }
