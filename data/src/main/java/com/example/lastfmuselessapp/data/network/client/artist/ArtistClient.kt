@@ -21,12 +21,12 @@ interface ArtistClient {
     /**
      * This method will fetch all matching artists for a given value.
      *
-     * @param value Value by which artists will be searched.
+     * @param artist Value by which artists will be searched.
      * @param limit The number of results to fetch per page. Defaults to 30.
      * @param pageNumber The page number to fetch. Defaults to first page.
      * */
     suspend fun fetchArtist(
-        value: String,
+        artist: String,
         limit: Int? = null,
         pageNumber: Int? = null
     ): Resource<List<Artist>>

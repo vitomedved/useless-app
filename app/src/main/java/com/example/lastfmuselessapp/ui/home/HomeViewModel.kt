@@ -31,8 +31,8 @@ class HomeViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            topTracksWorldwide.value = artistRepository.getTopArtists(NUMBER_OF_TOP_ITEMS_SHOWN)
-            topArtistsWorldwide.value = trackRepository.getTopTracksWorldwide(NUMBER_OF_TOP_ITEMS_SHOWN)
+            topTracksWorldwide.value = artistRepository.fetchTopArtistsWorldwide(NUMBER_OF_TOP_ITEMS_SHOWN)
+            topArtistsWorldwide.value = trackRepository.fetchTopTracksWorldwide(NUMBER_OF_TOP_ITEMS_SHOWN)
         }
     }
 }

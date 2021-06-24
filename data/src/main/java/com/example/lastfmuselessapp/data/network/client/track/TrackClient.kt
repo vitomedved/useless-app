@@ -18,7 +18,10 @@ interface TrackClient {
      *
      * @return [TopTracksWorldwideResponse] class - a data class mapped from JSON response.
      * */
-    suspend fun getTopTracksWorldwide(limit: Int? = null, page: Int? = null): Resource<List<Track>>
+    suspend fun fetchTopTracksWorldwide(
+        limit: Int? = null,
+        page: Int? = null
+    ): Resource<List<Track>>
 
     /**
      * Method that will fetch top tracks by specific country.
@@ -30,9 +33,16 @@ interface TrackClient {
      *
      * @return @see [TopTracksByCountryResponse] class - a data class mapped from JSON response.
      * */
-    suspend fun getTopTracksByCountry(
+    suspend fun fetchTopTracksByCountry(
         country: String,
         location: String? = null,
+        limit: Int? = null,
+        page: Int? = null
+    ): Resource<List<Track>>
+
+    suspend fun fetchTrack(
+        track: String,
+        artist: String? = null,
         limit: Int? = null,
         page: Int? = null
     ): Resource<List<Track>>

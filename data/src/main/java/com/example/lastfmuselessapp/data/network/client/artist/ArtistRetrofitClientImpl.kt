@@ -28,7 +28,7 @@ class ArtistRetrofitClientImpl(
     }
 
     override suspend fun fetchArtist(
-        value: String,
+        artist: String,
         limit: Int?,
         pageNumber: Int?
     ): Resource<List<Artist>> {
@@ -36,10 +36,10 @@ class ArtistRetrofitClientImpl(
             Resource.Success(
                 artistMapper.toArtistList(
                     artistRetrofitApi.fetchArtists(
-                        value,
+                        artist,
                         limit,
                         pageNumber
-                    ).results.artistMatches
+                    ).searchArtistResultContent.artistMatches
                 )
             )
         } catch (throwable: Throwable) {

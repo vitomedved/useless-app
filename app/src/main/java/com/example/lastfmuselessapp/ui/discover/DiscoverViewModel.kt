@@ -25,7 +25,7 @@ class DiscoverViewModel @Inject constructor(
 
     companion object {
         private const val SEARCH_ITEM_JOB_TAG = "search_item"
-        private const val USER_INTERACTION_TIMEOUT_MILLIS = 3000L
+        private const val USER_INTERACTION_TIMEOUT_MILLIS = 1000L
     }
 
     var searchInputValue = mutableStateOf("")
@@ -76,6 +76,9 @@ class DiscoverViewModel @Inject constructor(
 
     private fun initializeAndStartSearchItemsJob() {
         searchItemsJob = viewModelScope.launch {
+
+            searchableItemsList.value = Resource.Loading()
+
             when (selectedSearchCategory.value) {
                 SearchCategoryModel.SearchCategory.ARTIST -> searchArtists()
                 SearchCategoryModel.SearchCategory.TRACK -> searchTracks()
@@ -89,15 +92,13 @@ class DiscoverViewModel @Inject constructor(
     }
 
     private suspend fun searchArtists() {
-        // TODO optionally add Idle status to the list here in order to clear the view, maybe even loading status
-
-        // TODO item to searchable somehow
         searchableItemsList.value =
             artistRepository.fetchArtist(searchInputValue.value) as Resource<List<Searchable>>
     }
 
-    private fun searchTracks() {
-        println("TODO search tracks...")
+    private suspend fun searchTracks() {
+        searchableItemsList.value =
+            trackRepository.fetchTrack(searchInputValue.value) as Resource<List<Searchable>>
     }
 
     fun onCategorySelected(searchCategory: SearchCategoryModel.SearchCategory) {
@@ -121,5 +122,6 @@ class DiscoverViewModel @Inject constructor(
 
     fun onSearchInputBackButtonClicked() {
         searchInputValue.value = ""
+        searchableItemsList.value = Resource.Idle()
     }
 }

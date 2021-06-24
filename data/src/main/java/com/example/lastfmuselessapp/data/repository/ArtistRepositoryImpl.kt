@@ -11,11 +11,22 @@ class ArtistRepositoryImpl(
     private val artistClient: ArtistClient
 ) : ArtistRepository {
 
-    override suspend fun getTopArtists(numberOfTopArtists: Int): Resource<List<Artist>> {
-        return artistClient.fetchTopArtists(10)
+    override suspend fun fetchTopArtistsWorldwide(
+        numberOfTopArtists: Int,
+        pageNumber: Int?
+    ): Resource<List<Artist>> {
+        return artistClient.fetchTopArtists(limit = numberOfTopArtists, pageNumber = pageNumber)
     }
 
-    override suspend fun fetchArtist(value: String, numberOfResults: Int?): Resource<List<Artist>> {
-        return artistClient.fetchArtist(value, numberOfResults)
+    override suspend fun fetchArtist(
+        artist: String,
+        numberOfResults: Int?,
+        pageNumber: Int?
+    ): Resource<List<Artist>> {
+        return artistClient.fetchArtist(
+            artist = artist,
+            limit = numberOfResults,
+            pageNumber = pageNumber
+        )
     }
 }
