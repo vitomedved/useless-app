@@ -12,14 +12,34 @@ class ArtistRetrofitClientImpl(
     private val artistMapper: ArtistMapper
 ) : ArtistClient {
 
-    override suspend fun getTopArtists(limit: Int?, page: Int?): Resource<List<Artist>> {
+    override suspend fun fetchTopArtists(limit: Int?, pageNumber: Int?): Resource<List<Artist>> {
         return try {
             Resource.Success(
                 artistMapper.toArtistList(
-                    artistRetrofitApi.getTopArtists(
+                    artistRetrofitApi.fetchTopArtists(
                         limit = limit,
-                        page = page
+                        page = pageNumber
                     ).artistListWithAttributes
+                )
+            )
+        } catch (throwable: Throwable) {
+            Resource.Error("Unable to fetch artist data: $throwable")
+        }
+    }
+
+    override suspend fun fetchArtist(
+        artist: String,
+        limit: Int?,
+        pageNumber: Int?
+    ): Resource<List<Artist>> {
+        return try {
+            Resource.Success(
+                artistMapper.toArtistList(
+                    artistRetrofitApi.fetchArtists(
+                        artist,
+                        limit,
+                        pageNumber
+                    ).searchArtistResultContent.artistMatches
                 )
             )
         } catch (throwable: Throwable) {

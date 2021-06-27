@@ -85,6 +85,9 @@ dependencies {
     // Coil
     implementation "com.google.accompanist:accompanist-coil:0.10.0"
 
+    // Material icons
+    implementation "androidx.compose.material:material-icons-extended:$compose_version"
+
     // Unit test dependencies
     testImplementation 'junit:junit:4.+'
 

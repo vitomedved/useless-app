@@ -3,5 +3,13 @@
     <string name="onboarding">Onboarding</string>
     <string name="home">Home</string>
     <string name="artist">Artist</string>
+    <string name="track">Track</string>
+    <string name="discover">Discover</string>
     <string name="library">Library</string>
+
+    <string name="camera_icon">Camera icon</string>
+    <string name="clear_text_icon">Clear text icon</string>
+    <string name="back_arrow">Back arrow</string>
+    <string name="unknown">Unknown</string>
+
 </resources>

@@ -1,9 +1,11 @@
-package com.example.lastfmuselessapp.data.network.model.artist
+package com.example.lastfmuselessapp.data.network.model.track.search
 
 import com.example.lastfmuselessapp.data.network.model.common.Image
 import com.google.gson.annotations.SerializedName
 
-data class ArtistObject(
+data class Track(
+    @SerializedName("artist")
+    val artist: String,
     @SerializedName("image")
     val imageList: List<Image>,
     @SerializedName("listeners")
@@ -12,8 +14,6 @@ data class ArtistObject(
     val mbid: String,
     @SerializedName("name")
     val name: String,
-    @SerializedName("playcount")
-    val playcount: String,
     @SerializedName("streamable")
     val streamable: String,
     @SerializedName("url")

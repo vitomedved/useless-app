@@ -1,39 +1,32 @@
 package com.example.lastfmuselessapp.ui
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.navArgument
-import com.example.lastfmuselessapp.R
+import androidx.navigation.compose.*
+import com.example.lastfmuselessapp.model.NavbarItem
+import com.example.lastfmuselessapp.model.Screen
+import com.example.lastfmuselessapp.ui.discover.DiscoverScreen
+import com.example.lastfmuselessapp.ui.discover.DiscoverViewModel
 import com.example.lastfmuselessapp.ui.home.HomeScreen
 import com.example.lastfmuselessapp.ui.home.HomeViewModel
 import com.example.lastfmuselessapp.ui.onboarding.OnboardingScreen
 
-sealed class Screen(val route: String, @StringRes val resourceId: Int) {
-    object Home : Screen("home", R.string.home)
-    object Artist : Screen("artist/{artistId}", R.string.artist) {
-        fun getArtistIdArgument(): String = "artistId"
-        fun getRouteForArtistId(artistId: String) = "artist/$artistId"
-    }
-
-    object Library : Screen("library", R.string.library)
-}
-
 val bottomNavbarItems = listOf(
-    Screen.Home,
-    Screen.Library
+    NavbarItem(Screen.Home, Icons.Default.Home),
+    NavbarItem(Screen.Discover, Icons.Default.Search),
+    NavbarItem(Screen.Library, Icons.Default.List)
 )
 
 @Composable
@@ -49,20 +42,21 @@ fun UselessApp() {
             isOnboardingDone = true
         })
     } else {
-        UselessAppHome(navController = navController)
+        UselessAppBody(navController = navController)
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun UselessAppHome(navController: NavHostController) {
+fun UselessAppBody(navController: NavHostController) {
 
     var shouldShowNavbar by remember { mutableStateOf(true) }
 
     Scaffold(bottomBar = {
-        if(shouldShowNavbar) {
+        if (shouldShowNavbar) {
             BottomNavigationBar(navController = navController)
         }
-    }) {
+    }) { innerPaddingValues ->
         NavHost(
             navController = navController,
             startDestination = Screen.Home.route
@@ -70,19 +64,62 @@ fun UselessAppHome(navController: NavHostController) {
             composable(route = Screen.Home.route) {
 
                 val homeViewModel: HomeViewModel = hiltViewModel()
-                val homeUiState by homeViewModel.uiState.collectAsState()
+                val topArtistsWorldwide by homeViewModel.topTracksWorldwide
+                val topTracksWorldwide by homeViewModel.topArtistsWorldwide
 
-                HomeScreen(homeUiState = homeUiState, navController = navController)
+                HomeScreen(topArtistsWorldwide = topArtistsWorldwide,
+                    topTracksWorldwide = topTracksWorldwide,
+                    onArtistClicked = { artistId ->
+                        // TODO what if ID is missing?
+                        if (artistId.isNotEmpty()) {
+                            navController.navigate(Screen.Artist.getRouteForArtistId(artistId = artistId))
+                        }
+                    },
+                    onTrackClicked = { trackId ->
+                        // TODO
+                    },
+                innerPaddingValues = innerPaddingValues)
 
-                if(!shouldShowNavbar) {
+                if (!shouldShowNavbar) {
                     shouldShowNavbar = true
                 }
             }
 
+            composable(route = Screen.Discover.route) {
+
+                val discoverViewModel: DiscoverViewModel = hiltViewModel()
+                val searchText by discoverViewModel.searchInputValue
+                val focused by discoverViewModel.focused
+                val availableSearchCategories by discoverViewModel.availableSearchCategories
+                val selectedSearchCategory by discoverViewModel.selectedSearchCategory
+                val searchableItemsList by discoverViewModel.searchableItemsList
+
+                val keyboardController = LocalSoftwareKeyboardController.current
+
+                DiscoverScreen(
+                    searchText = searchText,
+                    focused = focused,
+                    availableSearchCategories = availableSearchCategories,
+                    selectedSearchCategory = selectedSearchCategory,
+                    searchableItemsList = searchableItemsList,
+                    onSearchTextChanged = discoverViewModel::onSearchTextChanged,
+                    onSearchTextCleared = discoverViewModel::onSearchTextCleared,
+                    onFocusChanged = discoverViewModel::onFocusChanged,
+                    onSearchClicked = {
+                        keyboardController?.hide()
+                        discoverViewModel.onSearchActionClicked()
+                    },
+                    onCategorySelected = discoverViewModel::onCategorySelected,
+                    onSearchInputBackButtonClicked = discoverViewModel::onSearchInputBackButtonClicked,
+                    innerPaddingValues = innerPaddingValues
+                )
+            }
+
             composable(route = Screen.Library.route) {
+                // innerPaddingValues: PaddingValues
                 Text(text = "Library, welcome!")
 
-                if(!shouldShowNavbar) {
+                if (!shouldShowNavbar) {
                     shouldShowNavbar = true
                 }
             }
@@ -98,9 +135,9 @@ fun UselessAppHome(navController: NavHostController) {
 
                 shouldShowNavbar = false
 
+                // innerPaddingValues: PaddingValues
                 ArtistScreen(
-                    navController = navController,
-                    backstackEntry.arguments?.getString("artistId")
+                    artistId = backstackEntry.arguments?.getString("artistId")
                 )
             }
         }
@@ -113,23 +150,26 @@ fun BottomNavigationBar(navController: NavController) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
 
-        bottomNavbarItems.forEach { screen ->
+        bottomNavbarItems.forEach { navbarItem ->
             BottomNavigationItem(
-                icon = { Icon(imageVector = Icons.Filled.Favorite, contentDescription = null) },
-                label = { Text(text = stringResource(id = screen.resourceId)) },
-                selected = currentRoute == screen.route,
+                icon = { Icon(imageVector = navbarItem.icon, contentDescription = null) },
+                label = { Text(text = stringResource(id = navbarItem.screen.nameResource)) },
+                selected = currentRoute == navbarItem.screen.route,
                 onClick = {
-                    navController.navigate(screen.route) {
-                        launchSingleTop = true
-                        popUpTo(navController.graph.startDestinationId)
+                    if (currentRoute != navbarItem.screen.route) {
+                        navController.navigate(navbarItem.screen.route) {
+                            launchSingleTop = true
+                            popUpTo(navController.graph.startDestinationId)
+                        }
                     }
-                })
+                }
+            )
         }
     }
 }
 
 @Composable
-fun ArtistScreen(navController: NavController, artistId: String?) {
+fun ArtistScreen(artistId: String?) {
     Column {
         Text("Welcome to screen for artist with ID: $artistId")
     }

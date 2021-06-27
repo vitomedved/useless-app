@@ -7,14 +7,26 @@ import com.example.lastfmuselessapp.domain.repository.TrackRepository
 
 class TrackRepositoryImpl(private val trackClient: TrackClient) : TrackRepository {
 
-    override suspend fun getTopTracksWorldwide(numberOfTopTracks: Int): Resource<List<Track>> {
-        return trackClient.getTopTracksWorldwide(limit = numberOfTopTracks)
+    override suspend fun fetchTopTracksWorldwide(
+        numberOfTopTracks: Int,
+        pageNumber: Int?
+    ): Resource<List<Track>> {
+        return trackClient.fetchTopTracksWorldwide(limit = numberOfTopTracks, page = pageNumber)
     }
 
-    override suspend fun getTopTracksByCountry(
+    override suspend fun fetchTopTracksByCountry(
         country: String,
         numberOfTopTracks: Int
     ): Resource<List<Track>> {
         TODO("Not yet implemented")
+    }
+
+    override suspend fun fetchTrack(
+        track: String,
+        artist: String?,
+        limit: Int?,
+        pageNumber: Int?
+    ): Resource<List<Track>> {
+        return trackClient.fetchTrack(track, artist, limit, pageNumber)
     }
 }

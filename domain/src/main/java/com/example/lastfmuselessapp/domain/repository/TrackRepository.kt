@@ -5,10 +5,17 @@ import com.example.lastfmuselessapp.domain.model.track.Track
 
 interface TrackRepository {
 
-    suspend fun getTopTracksWorldwide(numberOfTopTracks: Int): Resource<List<Track>>
+    suspend fun fetchTopTracksWorldwide(numberOfTopTracks: Int, pageNumber: Int? = null): Resource<List<Track>>
 
-    suspend fun getTopTracksByCountry(
+    suspend fun fetchTopTracksByCountry(
         country: String,
         numberOfTopTracks: Int
+    ): Resource<List<Track>>
+
+    suspend fun fetchTrack(
+        track: String,
+        artist: String? = null,
+        limit: Int? = null,
+        pageNumber: Int? = null
     ): Resource<List<Track>>
 }

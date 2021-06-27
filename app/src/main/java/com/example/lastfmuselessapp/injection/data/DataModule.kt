@@ -32,30 +32,39 @@ object DataModule {
 
     @Provides
     @Singleton
-    fun provideLocalArtistProvider(): LocalArtistProvider = LocalArtistProviderImpl()
+    fun provideLocalArtistProvider(): LocalArtistProvider {
+        return LocalArtistProviderImpl()
+    }
 
     @Provides
     @Singleton
-    fun provideUrlProvider(): UrlProvider = UrlProviderImpl()
+    fun provideUrlProvider(): UrlProvider {
+        return UrlProviderImpl()
+    }
 
     @Provides
     @Singleton
-    fun provideGsonConverterFactory(): GsonConverterFactory = GsonConverterFactory.create()
+    fun provideGsonConverterFactory(): GsonConverterFactory {
+        return GsonConverterFactory.create()
+    }
 
     @Provides
     @Singleton
     fun provideLastFmRetrofitObject(
         gsonConverterFactory: GsonConverterFactory,
         urlProvider: UrlProvider
-    ): Retrofit = Retrofit.Builder()
-        .addConverterFactory(gsonConverterFactory)
-        .baseUrl(urlProvider.provideBaseUrlLastFmApi())
-        .build()
+    ): Retrofit {
+        return Retrofit.Builder()
+            .addConverterFactory(gsonConverterFactory)
+            .baseUrl(urlProvider.provideBaseUrlLastFmApi())
+            .build()
+    }
 
     @Provides
     @Singleton
-    fun provideArtistRetrofitApi(lastFmRetrofitObject: Retrofit): ArtistRetrofitApi =
-        lastFmRetrofitObject.create(ArtistRetrofitApi::class.java)
+    fun provideArtistRetrofitApi(lastFmRetrofitObject: Retrofit): ArtistRetrofitApi {
+        return lastFmRetrofitObject.create(ArtistRetrofitApi::class.java)
+    }
 
     @Provides
     @Singleton
@@ -68,33 +77,43 @@ object DataModule {
     fun provideArtistClient(
         artistRetrofitApi: ArtistRetrofitApi,
         artistMapper: ArtistMapper
-    ): ArtistClient = ArtistRetrofitClientImpl(artistRetrofitApi, artistMapper)
+    ): ArtistClient {
+        return ArtistRetrofitClientImpl(artistRetrofitApi, artistMapper)
+    }
 
     @Provides
     @Singleton
     fun provideArtistRepository(
         localArtistProvider: LocalArtistProvider,
         artistClient: ArtistClient
-    ): ArtistRepository = ArtistRepositoryImpl(localArtistProvider, artistClient)
+    ): ArtistRepository {
+        return ArtistRepositoryImpl(localArtistProvider, artistClient)
+    }
 
     @Provides
     @Singleton
-    fun provideTrackRetrofitApi(lastFmRetrofitObject: Retrofit): TrackRetrofitApi =
-        lastFmRetrofitObject.create(TrackRetrofitApi::class.java)
+    fun provideTrackRetrofitApi(lastFmRetrofitObject: Retrofit): TrackRetrofitApi {
+        return lastFmRetrofitObject.create(TrackRetrofitApi::class.java)
+    }
 
     @Provides
     @Singleton
-    fun provideTrackMapper(): TrackMapper = TrackMapperImpl()
+    fun provideTrackMapper(): TrackMapper {
+        return TrackMapperImpl()
+    }
 
     @Provides
     @Singleton
     fun providesTrackClient(
         trackRetrofitApi: TrackRetrofitApi,
         trackMapper: TrackMapper
-    ): TrackClient = TrackRetrofitClientImpl(trackRetrofitApi, trackMapper)
+    ): TrackClient {
+        return TrackRetrofitClientImpl(trackRetrofitApi, trackMapper)
+    }
 
     @Provides
     @Singleton
-    fun provideTrackRepository(trackClient: TrackClient): TrackRepository =
-        TrackRepositoryImpl(trackClient)
+    fun provideTrackRepository(trackClient: TrackClient): TrackRepository {
+        return TrackRepositoryImpl(trackClient)
+    }
 }

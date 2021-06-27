@@ -12,9 +12,22 @@ interface ArtistClient {
      * This method will fetch top artists worldwide.
      *
      * @param limit The number of results to fetch per page. Defaults to 50.
-     * @param page The page number to fetch. Defaults to first page.
+     * @param pageNumber The page number to fetch. Defaults to first page.
      *
      * @return Resource object of list of [Artist] items.
      * */
-    suspend fun getTopArtists(limit: Int?, page: Int? = null): Resource<List<Artist>>
+    suspend fun fetchTopArtists(limit: Int? = null, pageNumber: Int? = null): Resource<List<Artist>>
+
+    /**
+     * This method will fetch all matching artists for a given value.
+     *
+     * @param artist Value by which artists will be searched.
+     * @param limit The number of results to fetch per page. Defaults to 30.
+     * @param pageNumber The page number to fetch. Defaults to first page.
+     * */
+    suspend fun fetchArtist(
+        artist: String,
+        limit: Int? = null,
+        pageNumber: Int? = null
+    ): Resource<List<Artist>>
 }
