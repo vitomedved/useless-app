@@ -10,6 +10,8 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -45,8 +47,6 @@ fun AnimatedSearchCategoryItemsRow(
     }
 }
 
-private val emptyTabIndicator: @Composable (List<TabPosition>) -> Unit = {}
-
 @Composable
 fun SearchCategoryTabs(
     modifier: Modifier = Modifier,
@@ -54,29 +54,23 @@ fun SearchCategoryTabs(
     selectedSearchCategory: SearchCategoryModel.SearchCategory,
     onCategorySelected: (SearchCategoryModel.SearchCategory) -> Unit
 ) {
-    val selectedIndex =
-        searchCategoryItems.indexOfFirst { it.searchCategory == selectedSearchCategory }
-
-    ScrollableTabRow(
-        selectedTabIndex = selectedIndex,
-        divider = {},
-        edgePadding = 24.dp, // TODO ?
-        indicator = emptyTabIndicator,
+    LazyRow(
         modifier = modifier
     ) {
-        searchCategoryItems.forEachIndexed { index, category ->
-
+        items(searchCategoryItems) { category ->
             Surface(modifier = Modifier
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null,
-                    onClick = { onCategorySelected(category.searchCategory) }
+                    onClick = {
+                        onCategorySelected(category.searchCategory)
+                    }
                 )
                 .padding(horizontal = 8.dp, vertical = 16.dp)
             ) {
                 CategoryChipItem(
                     text = stringResource(id = category.searchCategoryLabel),
-                    selected = index == selectedIndex,
+                    selected = category.searchCategory == selectedSearchCategory,
                     modifier = Modifier
                 )
             }
