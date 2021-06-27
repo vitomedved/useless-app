@@ -1,4 +1,4 @@
-package com.example.lastfmuselessapp.ui.composables
+package com.example.lastfmuselessapp.ui.composables.carousel
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable

@@ -8,7 +8,7 @@ import androidx.compose.ui.unit.dp
 import com.example.lastfmuselessapp.domain.model.Resource
 import com.example.lastfmuselessapp.domain.model.artist.Artist
 import com.example.lastfmuselessapp.domain.model.track.Track
-import com.example.lastfmuselessapp.ui.composables.HorizontalCarouselItem
+import com.example.lastfmuselessapp.ui.composables.carousel.HorizontalCarouselItem
 import com.example.lastfmuselessapp.ui.composables.HorizontalScrollingCarousel
 import com.example.lastfmuselessapp.ui.composables.Label
 import com.example.lastfmuselessapp.ui.composables.LoadingAnimation
